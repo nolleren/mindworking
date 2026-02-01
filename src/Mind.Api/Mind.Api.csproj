@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>a7576a1e-3417-4c8d-9fbb-61ef23b68821</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..</DockerfileContext>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GraphQL" />
+    <PackageReference Include="GraphQL.DataLoader" />
+    <PackageReference Include="GraphQL.MicrosoftDI" />
+    <PackageReference Include="GraphQL.Server.Transports.AspNetCore" />
+    <PackageReference Include="GraphQL.Server.Ui.GraphiQL" />
+    <PackageReference Include="GraphQL.SystemTextJson" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="all" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Mind.ServiceDefaults\Mind.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\Mind.Application\Mind.Application.csproj" />
+    <ProjectReference Include="..\Mind.Infrastructure\Mind.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

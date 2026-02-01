@@ -1,0 +1,43 @@
+# Build outputs
+**/bin/
+**/obj/
+
+# Visual Studio / VS Code
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider / JetBrains
+.idea/
+
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# ASP.NET Core
+appsettings.*.json
+!appsettings.json
+!appsettings.Development.json
+
+# User secrets / local env
+secrets.json
+.env
+.env.*
+
+# Logs
+*.log
+
+# Test results
+TestResults/
+
+# EF
+**/Migrations/*.csproj
+
+# Node (if any tooling gets added later)
+node_modules/
+
+# Aspire / containers (local state)
+**/.aspire/

@@ -1,0 +1,18 @@
+<Solution>
+  <Folder Name="/Core/">
+    <Project Path="src/Mind.Core/Mind.Core.csproj" />
+  </Folder>
+  <Folder Name="/Application/">
+    <Project Path="src/Mind.Application/Mind.Application.csproj" />
+  </Folder>
+  <Folder Name="/Infrastructure/">
+    <Project Path="src/Mind.Infrastructure/Mind.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/Api/">
+    <Project Path="src/Mind.Api/Mind.Api.csproj" />
+  </Folder>
+  <Folder Name="/Aspire/">
+    <Project Path="src/Mind.AppHost/Mind.AppHost.csproj" />
+    <Project Path="src/Mind.ServiceDefaults/Mind.ServiceDefaults.csproj" />
+  </Folder>
+</Solution>
