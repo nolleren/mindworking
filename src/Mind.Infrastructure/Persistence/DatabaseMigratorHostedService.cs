@@ -4,18 +4,11 @@ using Microsoft.Extensions.Hosting;
 
 namespace Mind.Infrastructure.Persistence;
 
-internal sealed class DatabaseMigratorHostedService : IHostedService
+internal sealed class DatabaseMigratorHostedService(IServiceProvider serviceProvider) : IHostedService
 {
-    private readonly IServiceProvider _serviceProvider;
-
-    public DatabaseMigratorHostedService(IServiceProvider serviceProvider)
-    {
-        _serviceProvider = serviceProvider;
-    }
-
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        using var scope = _serviceProvider.CreateScope();
+        using var scope = serviceProvider.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<MindDbContext>();
         await dbContext.Database.MigrateAsync(cancellationToken);
     }

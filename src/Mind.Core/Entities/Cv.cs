@@ -2,7 +2,7 @@ namespace Mind.Core.Entities;
 
 public sealed class Cv : BaseEntity
 {
-    public string Name { get; set; } = string.Empty;
+    public required string Name { get; set; }
 
     public ICollection<Company> Companies { get; set; } = new List<Company>();
     public ICollection<Project> Projects { get; set; } = new List<Project>();

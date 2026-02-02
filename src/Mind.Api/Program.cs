@@ -1,18 +1,16 @@
 using GraphQL;
 using GraphQL.Server.Ui.GraphiQL;
 using Microsoft.EntityFrameworkCore;
-using Mind.Api.GraphQL;
-using Mind.Api.GraphQL.DataLoaders;
 using Mind.Application;
 using Mind.Core;
 using Mind.Infrastructure;
+using Mind.Presentation.GraphQL;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
 // Add services to the container.
-builder.Services.AddCore();
 builder.Services.AddApplication();
 
 builder.Services.AddInfrastructure(options =>
@@ -26,8 +24,7 @@ builder.Services.AddInfrastructure(options =>
     options.UseNpgsql(connectionString);
 });
 
-builder.Services.AddScoped(typeof(EntitiesByCvIdDataLoader<>));
-builder.Services.AddScoped(typeof(CvsByEntityIdDataLoader<>));
+builder.Services.AddGraphQLPresentation();
 
 builder.Services
     .AddGraphQL(graphQLBuilder =>
@@ -52,6 +49,7 @@ app.MapDefaultEndpoints();
 app.UseHttpsRedirection();
 
 app.UseGraphQL<MindSchema>("/graphql");
+
 if (app.Environment.IsDevelopment())
 {
     app.UseGraphQLGraphiQL(
@@ -59,27 +57,4 @@ if (app.Environment.IsDevelopment())
         new GraphiQLOptions { GraphQLEndPoint = "/graphql" });
 }
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-});
-
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

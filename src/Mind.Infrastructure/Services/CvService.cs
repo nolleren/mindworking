@@ -1,35 +1,21 @@
 using Microsoft.EntityFrameworkCore;
+using Mind.Application.Inputs;
 using Mind.Application.Services;
 using Mind.Core.Entities;
 using Mind.Infrastructure.Persistence;
 
 namespace Mind.Infrastructure.Services;
 
-internal sealed class CvService : ICvService
+internal sealed class CvService(
+    MindDbContext db,
+    ICompanyService companyService,
+    IProjectService projectService,
+    IEducationService educationService,
+    ISkillService skillService) : ICvService
 {
-    private readonly MindDbContext _db;
-    private readonly ICompanyService _companyService;
-    private readonly IProjectService _projectService;
-    private readonly IEducationService _educationService;
-    private readonly ISkillService _skillService;
-
-    public CvService(
-        MindDbContext db,
-        ICompanyService companyService,
-        IProjectService projectService,
-        IEducationService educationService,
-        ISkillService skillService)
-    {
-        _db = db;
-        _companyService = companyService;
-        _projectService = projectService;
-        _educationService = educationService;
-        _skillService = skillService;
-    }
-
     public async Task<IReadOnlyList<Cv>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await _db.Cvs
+        return await db.Cvs
             .AsNoTracking()
             .OrderBy(x => x.Name)
             .ToListAsync(cancellationToken);
@@ -37,280 +23,286 @@ internal sealed class CvService : ICvService
 
     public async Task<Cv?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _db.Cvs
+        return await db.Cvs
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 
-    public async Task<IReadOnlyDictionary<Guid, IReadOnlyList<Cv>>> GetByCompanyIdsAsync(
-        IReadOnlyCollection<Guid> companyIds,
-        CancellationToken cancellationToken = default)
+    public async Task<Cv> CreateAsync(CvCreateInput request, CancellationToken cancellationToken = default)
     {
-        if (companyIds.Count == 0)
-        {
-            return new Dictionary<Guid, IReadOnlyList<Cv>>();
-        }
-
-        var ids = companyIds.Distinct().ToArray();
-        var result = ids.ToDictionary(x => x, _ => (IReadOnlyList<Cv>)Array.Empty<Cv>());
-
-        var companies = await _db.Companies
-            .AsNoTracking()
-            .Where(x => ids.Contains(x.Id))
-            .Include(x => x.Cvs)
-            .ToListAsync(cancellationToken);
-
-        foreach (var company in companies)
-        {
-            result[company.Id] = company.Cvs
-                .OrderBy(x => x.Name)
-                .ToList();
-        }
-
-        return result;
-    }
-
-    public async Task<IReadOnlyDictionary<Guid, IReadOnlyList<Cv>>> GetByProjectIdsAsync(
-        IReadOnlyCollection<Guid> projectIds,
-        CancellationToken cancellationToken = default)
-    {
-        if (projectIds.Count == 0)
-        {
-            return new Dictionary<Guid, IReadOnlyList<Cv>>();
-        }
-
-        var ids = projectIds.Distinct().ToArray();
-        var result = ids.ToDictionary(x => x, _ => (IReadOnlyList<Cv>)Array.Empty<Cv>());
-
-        var projects = await _db.Projects
-            .AsNoTracking()
-            .Where(x => ids.Contains(x.Id))
-            .Include(x => x.Cvs)
-            .ToListAsync(cancellationToken);
-
-        foreach (var project in projects)
-        {
-            result[project.Id] = project.Cvs
-                .OrderBy(x => x.Name)
-                .ToList();
-        }
-
-        return result;
-    }
-
-    public async Task<IReadOnlyDictionary<Guid, IReadOnlyList<Cv>>> GetByEducationIdsAsync(
-        IReadOnlyCollection<Guid> educationIds,
-        CancellationToken cancellationToken = default)
-    {
-        if (educationIds.Count == 0)
-        {
-            return new Dictionary<Guid, IReadOnlyList<Cv>>();
-        }
-
-        var ids = educationIds.Distinct().ToArray();
-        var result = ids.ToDictionary(x => x, _ => (IReadOnlyList<Cv>)Array.Empty<Cv>());
-
-        var educations = await _db.Educations
-            .AsNoTracking()
-            .Where(x => ids.Contains(x.Id))
-            .Include(x => x.Cvs)
-            .ToListAsync(cancellationToken);
-
-        foreach (var education in educations)
-        {
-            result[education.Id] = education.Cvs
-                .OrderBy(x => x.Name)
-                .ToList();
-        }
-
-        return result;
-    }
-
-    public async Task<IReadOnlyDictionary<Guid, IReadOnlyList<Cv>>> GetBySkillIdsAsync(
-        IReadOnlyCollection<Guid> skillIds,
-        CancellationToken cancellationToken = default)
-    {
-        if (skillIds.Count == 0)
-        {
-            return new Dictionary<Guid, IReadOnlyList<Cv>>();
-        }
-
-        var ids = skillIds.Distinct().ToArray();
-        var result = ids.ToDictionary(x => x, _ => (IReadOnlyList<Cv>)Array.Empty<Cv>());
-
-        var skills = await _db.Skills
-            .AsNoTracking()
-            .Where(x => ids.Contains(x.Id))
-            .Include(x => x.Cvs)
-            .ToListAsync(cancellationToken);
-
-        foreach (var skill in skills)
-        {
-            result[skill.Id] = skill.Cvs
-                .OrderBy(x => x.Name)
-                .ToList();
-        }
-
-        return result;
-    }
-
-    public async Task<Cv> CreateAsync(CreateCvRequest request, CancellationToken cancellationToken = default)
-    {
-        if (string.IsNullOrWhiteSpace(request.Name))
-        {
-            throw new ArgumentException("CV name is required", nameof(request));
-        }
-
         var cv = new Cv { Name = request.Name.Trim() };
 
-        await AttachCompaniesAsync(cv, request.Companies, cancellationToken);
-        await AttachProjectsAsync(cv, request.Projects, cancellationToken);
-        await AttachEducationsAsync(cv, request.Educations, cancellationToken);
-        await AttachSkillsAsync(cv, request.Skills, cancellationToken);
+        if (request.Companies?.Count > 0)
+        {
+            var created = await companyService.CreateCompaniesAsync(request.Companies, cancellationToken);
+            foreach (var entity in created)
+            {
+                cv.Companies.Add(entity);
+            }
+        }
 
-        _db.Cvs.Add(cv);
-        await _db.SaveChangesAsync(cancellationToken);
+        if (request.Projects?.Count > 0)
+        {
+            var created = await projectService.CreateProjectsAsync(request.Projects, cancellationToken);
+            foreach (var entity in created)
+            {
+                cv.Projects.Add(entity);
+            }
+        }
+
+        if (request.Educations?.Count > 0)
+        {
+            var created = await educationService.CreateEducationsAsync(request.Educations, cancellationToken);
+            foreach (var entity in created)
+            {
+                cv.Educations.Add(entity);
+            }
+        }
+
+        if (request.Skills?.Count > 0)
+        {
+            var created = await skillService.CreateSkillsAsync(request.Skills, cancellationToken);
+            foreach (var entity in created)
+            {
+                cv.Skills.Add(entity);
+            }
+        }
+
+        db.Cvs.Add(cv);
+        await db.SaveChangesAsync(cancellationToken);
 
         return cv;
     }
 
-    private async Task AttachCompaniesAsync(Cv cv, EntityConnectCreateRequest<Company>? request, CancellationToken cancellationToken)
+    public async Task<Cv> UpdateAsync(CvUpdateInput request, CancellationToken cancellationToken = default)
     {
-        if (request is null)
+        var cv = await db.Cvs
+            .Include(x => x.Companies)
+            .Include(x => x.Projects)
+            .Include(x => x.Educations)
+            .Include(x => x.Skills)
+            .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+
+        if (cv is null)
+        {
+            throw new InvalidOperationException($"Unknown CV id '{request.Id}'.");
+        }
+
+        if (request.Name is not null)
+        {
+            if (string.IsNullOrWhiteSpace(request.Name))
+            {
+                throw new ArgumentException("CV name cannot be empty.", nameof(request));
+            }
+
+            cv.Name = request.Name.Trim();
+        }
+
+        await ApplyCompaniesAsync(cv, request.Companies, cancellationToken);
+        await ApplyProjectsAsync(cv, request.Projects, cancellationToken);
+        await ApplyEducationsAsync(cv, request.Educations, cancellationToken);
+        await ApplySkillsAsync(cv, request.Skills, cancellationToken);
+
+        await db.SaveChangesAsync(cancellationToken);
+        return cv;
+    }
+
+    public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var cv = await db.Cvs.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        if (cv is null)
+        {
+            return false;
+        }
+
+        db.Cvs.Remove(cv);
+        await db.SaveChangesAsync(cancellationToken);
+        return true;
+    }
+
+    private async Task ApplyCompaniesAsync(Cv cv, List<CompanyUpsertInput>? inputs, CancellationToken cancellationToken)
+    {
+        if (inputs is null)
         {
             return;
         }
 
-        if (request.ConnectIds is { Count: > 0 })
+        var desired = new List<Company>();
+        foreach (var input in inputs)
         {
-            var ids = request.ConnectIds.Distinct().ToArray();
-            var existing = await _companyService.GetByIdsAsync(ids, cancellationToken);
+            Company entity;
 
-            var missing = ids.Where(id => !existing.ContainsKey(id)).ToArray();
-            if (missing.Length > 0)
+            if (input.Id != null)
             {
-                throw new InvalidOperationException($"Unknown company id(s): {string.Join(", ", missing)}");
+                var id = input.Id.Value;
+                entity = await db.Companies.FirstOrDefaultAsync(x => x.Id == id, cancellationToken)
+                    ?? throw new InvalidOperationException($"Unknown company id '{id}'.");
+
+                entity.Name = input.Name.Trim();
+                entity.Address = input.Address.Trim();
+                entity.ZipCode = input.ZipCode.Trim();
+                entity.City = input.City.Trim();
+                entity.Description = input.Description.Trim();
+            }
+            else
+            {
+                entity = new Company
+                {
+                    Name = input.Name.Trim(),
+                    Address = input.Address.Trim(),
+                    ZipCode = input.ZipCode.Trim(),
+                    City = input.City.Trim(),
+                    Description = input.Description.Trim(),
+                };
+
+                db.Companies.Add(entity);
             }
 
-            _db.AttachRange(existing.Values);
-            foreach (var entity in existing.Values)
-            {
-                cv.Companies.Add(entity);
-            }
+            desired.Add(entity);
         }
 
-        if (request.Create is { Count: > 0 })
+        cv.Companies.Clear();
+        foreach (var entity in desired.GroupBy(x => x.Id).Select(g => g.First()))
         {
-            var created = await _companyService.CreateManyAsync(request.Create, cancellationToken);
-            foreach (var entity in created)
-            {
-                cv.Companies.Add(entity);
-            }
+            cv.Companies.Add(entity);
         }
     }
 
-    private async Task AttachProjectsAsync(Cv cv, EntityConnectCreateRequest<Project>? request, CancellationToken cancellationToken)
+    private async Task ApplyProjectsAsync(Cv cv, List<ProjectUpsertInput>? inputs, CancellationToken cancellationToken)
     {
-        if (request is null)
+        if (inputs is null)
         {
             return;
         }
 
-        if (request.ConnectIds is { Count: > 0 })
+        var desired = new List<Project>();
+        foreach (var input in inputs)
         {
-            var ids = request.ConnectIds.Distinct().ToArray();
-            var existing = await _projectService.GetByIdsAsync(ids, cancellationToken);
+            Project entity;
 
-            var missing = ids.Where(id => !existing.ContainsKey(id)).ToArray();
-            if (missing.Length > 0)
+            if (input.Id != null)
             {
-                throw new InvalidOperationException($"Unknown project id(s): {string.Join(", ", missing)}");
+                var id = input.Id.Value;
+                entity = await db.Projects.FirstOrDefaultAsync(x => x.Id == id, cancellationToken)
+                    ?? throw new InvalidOperationException($"Unknown project id '{id}'.");
+
+                entity.Name = input.Name.Trim();
+                entity.StartDate = input.StartDate;
+                entity.EndDate = input.EndDate;
+                entity.Description = input.Description.Trim();
+            }
+            else
+            {
+                entity = new Project
+                {
+                    Name = input.Name.Trim(),
+                    StartDate = input.StartDate,
+                    EndDate = input.EndDate,
+                    Description = input.Description.Trim(),
+                };
+
+                db.Projects.Add(entity);
             }
 
-            _db.AttachRange(existing.Values);
-            foreach (var entity in existing.Values)
-            {
-                cv.Projects.Add(entity);
-            }
+            desired.Add(entity);
         }
 
-        if (request.Create is { Count: > 0 })
+        cv.Projects.Clear();
+        foreach (var entity in desired.GroupBy(x => x.Id).Select(g => g.First()))
         {
-            var created = await _projectService.CreateManyAsync(request.Create, cancellationToken);
-            foreach (var entity in created)
-            {
-                cv.Projects.Add(entity);
-            }
+            cv.Projects.Add(entity);
         }
     }
 
-    private async Task AttachEducationsAsync(Cv cv, EntityConnectCreateRequest<Education>? request, CancellationToken cancellationToken)
+    private async Task ApplyEducationsAsync(Cv cv, List<EducationUpsertInput>? inputs, CancellationToken cancellationToken)
     {
-        if (request is null)
+        if (inputs is null)
         {
             return;
         }
 
-        if (request.ConnectIds is { Count: > 0 })
+        var desired = new List<Education>();
+        foreach (var input in inputs)
         {
-            var ids = request.ConnectIds.Distinct().ToArray();
-            var existing = await _educationService.GetByIdsAsync(ids, cancellationToken);
+            Education entity;
 
-            var missing = ids.Where(id => !existing.ContainsKey(id)).ToArray();
-            if (missing.Length > 0)
+            if (input.Id != null)
             {
-                throw new InvalidOperationException($"Unknown education id(s): {string.Join(", ", missing)}");
+                var id = input.Id.Value;
+                entity = await db.Educations.FirstOrDefaultAsync(x => x.Id == id, cancellationToken)
+                    ?? throw new InvalidOperationException($"Unknown education id '{id}'.");
+
+                entity.Name = input.Name.Trim();
+                entity.Address = input.Address.Trim();
+                entity.ZipCode = input.ZipCode.Trim();
+                entity.City = input.City.Trim();
+                entity.Description = input.Description.Trim();
+            }
+            else
+            {
+                entity = new Education
+                {
+                    Name = input.Name.Trim(),
+                    Address = input.Address.Trim(),
+                    ZipCode = input.ZipCode.Trim(),
+                    City = input.City.Trim(),
+                    Description = input.Description.Trim(),
+                };
+
+                db.Educations.Add(entity);
             }
 
-            _db.AttachRange(existing.Values);
-            foreach (var entity in existing.Values)
-            {
-                cv.Educations.Add(entity);
-            }
+            desired.Add(entity);
         }
 
-        if (request.Create is { Count: > 0 })
+        cv.Educations.Clear();
+        foreach (var entity in desired.GroupBy(x => x.Id).Select(g => g.First()))
         {
-            var created = await _educationService.CreateManyAsync(request.Create, cancellationToken);
-            foreach (var entity in created)
-            {
-                cv.Educations.Add(entity);
-            }
+            cv.Educations.Add(entity);
         }
     }
 
-    private async Task AttachSkillsAsync(Cv cv, EntityConnectCreateRequest<Skill>? request, CancellationToken cancellationToken)
+    private async Task ApplySkillsAsync(Cv cv, List<SkillUpsertInput>? inputs, CancellationToken cancellationToken)
     {
-        if (request is null)
+        if (inputs is null)
         {
             return;
         }
 
-        if (request.ConnectIds is { Count: > 0 })
+        var desired = new List<Skill>();
+        foreach (var input in inputs)
         {
-            var ids = request.ConnectIds.Distinct().ToArray();
-            var existing = await _skillService.GetByIdsAsync(ids, cancellationToken);
+            Skill entity;
 
-            var missing = ids.Where(id => !existing.ContainsKey(id)).ToArray();
-            if (missing.Length > 0)
+            if (input.Id != null)
             {
-                throw new InvalidOperationException($"Unknown skill id(s): {string.Join(", ", missing)}");
+                var id = input.Id.Value;
+                entity = await db.Skills.FirstOrDefaultAsync(x => x.Id == id, cancellationToken)
+                    ?? throw new InvalidOperationException($"Unknown skill id '{id}'.");
+
+                entity.Name = input.Name.Trim();
+                entity.Description = input.Description.Trim();
+                entity.LevelOfMastery = input.LevelOfMastery;
+            }
+            else
+            {
+                entity = new Skill
+                {
+                    Name = input.Name.Trim(),
+                    Description = input.Description.Trim(),
+                    LevelOfMastery = input.LevelOfMastery,
+                };
+
+                db.Skills.Add(entity);
             }
 
-            _db.AttachRange(existing.Values);
-            foreach (var entity in existing.Values)
-            {
-                cv.Skills.Add(entity);
-            }
+            desired.Add(entity);
         }
 
-        if (request.Create is { Count: > 0 })
+        cv.Skills.Clear();
+        foreach (var entity in desired.GroupBy(x => x.Id).Select(g => g.First()))
         {
-            var created = await _skillService.CreateManyAsync(request.Create, cancellationToken);
-            foreach (var entity in created)
-            {
-                cv.Skills.Add(entity);
-            }
+            cv.Skills.Add(entity);
         }
     }
 }

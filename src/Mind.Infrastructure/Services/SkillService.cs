@@ -1,22 +1,16 @@
 using Microsoft.EntityFrameworkCore;
+using Mind.Application.Inputs;
 using Mind.Application.Services;
 using Mind.Core.Entities;
 using Mind.Infrastructure.Persistence;
 
 namespace Mind.Infrastructure.Services;
 
-internal sealed class SkillService : ISkillService
+internal sealed class SkillService(MindDbContext db) : ISkillService
 {
-    private readonly MindDbContext _db;
-
-    public SkillService(MindDbContext db)
-    {
-        _db = db;
-    }
-
     public async Task<IReadOnlyList<Skill>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await _db.Skills
+        return await db.Skills
             .AsNoTracking()
             .OrderBy(x => x.Name)
             .ToListAsync(cancellationToken);
@@ -24,38 +18,76 @@ internal sealed class SkillService : ISkillService
 
     public async Task<Skill?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _db.Skills
+        return await db.Skills
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 
-    public async Task<IReadOnlyDictionary<Guid, Skill>> GetByIdsAsync(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken = default)
-    {
-        if (ids.Count == 0)
-        {
-            return new Dictionary<Guid, Skill>();
-        }
-
-        return await _db.Skills
-            .AsNoTracking()
-            .Where(x => ids.Contains(x.Id))
-            .ToDictionaryAsync(x => x.Id, cancellationToken);
-    }
-
-    public Task<IReadOnlyList<Skill>> CreateManyAsync(IReadOnlyList<EntityCreateRequest> createRequests, CancellationToken cancellationToken = default)
+    public Task<IReadOnlyList<Skill>> CreateSkillsAsync(IReadOnlyList<SkillCreateInput> createRequests, CancellationToken cancellationToken = default)
     {
         var created = createRequests
-            .Where(x => !string.IsNullOrWhiteSpace(x.Name))
             .Select(x => new Skill
             {
                 Name = x.Name.Trim(),
-                Description = string.IsNullOrWhiteSpace(x.Description) ? null : x.Description.Trim(),
-                LevelOfMastery = x.LevelOfMastery ?? SkillMasteryLevel.Basis,
+                Description = x.Description.Trim(),
+                LevelOfMastery = x.LevelOfMastery,
             })
             .ToList();
 
-        _db.Skills.AddRange(created);
+        db.Skills.AddRange(created);
 
         return Task.FromResult((IReadOnlyList<Skill>)created);
+    }
+
+    public async Task<Skill> CreateAsync(SkillCreateInput input, CancellationToken cancellationToken = default)
+    {
+        var entity = new Skill
+        {
+            Name = input.Name.Trim(),
+            Description = input.Description.Trim(),
+            LevelOfMastery = input.LevelOfMastery,
+        };
+
+        db.Skills.Add(entity);
+        await db.SaveChangesAsync(cancellationToken);
+        return entity;
+    }
+
+    public async Task<Skill> UpdateAsync(SkillUpsertInput input, CancellationToken cancellationToken = default)
+    {
+        if (input.Id == null)
+        {
+            throw new ArgumentException("Id is required for update.", nameof(input));
+        }
+
+        var id = input.Id.Value;
+        var entity = await db.Skills.FirstOrDefaultAsync(x => x.Id == id, cancellationToken)
+            ?? throw new InvalidOperationException($"Unknown skill id '{id}'.");
+
+        entity.Name = input.Name.Trim();
+        entity.Description = input.Description.Trim();
+        entity.LevelOfMastery = input.LevelOfMastery;
+
+        await db.SaveChangesAsync(cancellationToken);
+        return entity;
+    }
+
+    public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var entity = await db.Skills.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        if (entity is null)
+        {
+            return false;
+        }
+
+        var hasDependencies = await db.Entry(entity).Collection(x => x.Cvs).Query().AnyAsync(cancellationToken);
+        if (hasDependencies)
+        {
+            throw new InvalidOperationException("Cannot delete skill because it is linked to one or more CVs.");
+        }
+
+        db.Skills.Remove(entity);
+        await db.SaveChangesAsync(cancellationToken);
+        return true;
     }
 }

@@ -4,12 +4,8 @@ using Mind.Core.Entities;
 
 namespace Mind.Infrastructure.Persistence;
 
-public sealed class MindDbContext : DbContext
+public sealed class MindDbContext(DbContextOptions<MindDbContext> options) : DbContext(options)
 {
-    public MindDbContext(DbContextOptions<MindDbContext> options) : base(options)
-    {
-    }
-
     public DbSet<Cv> Cvs => Set<Cv>();
     public DbSet<Company> Companies => Set<Company>();
     public DbSet<Project> Projects => Set<Project>();
@@ -56,6 +52,13 @@ public sealed class MindDbContext : DbContext
 
             if (entry.State == EntityState.Modified)
             {
+                entry.Entity.UpdatedAt = utcNow;
+            }
+
+            if (entry.State == EntityState.Deleted)
+            {
+                entry.State = EntityState.Modified;
+                entry.Entity.IsDeleted = true;
                 entry.Entity.UpdatedAt = utcNow;
             }
         }

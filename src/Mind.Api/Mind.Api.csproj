@@ -25,6 +25,7 @@
     <ProjectReference Include="..\Mind.ServiceDefaults\Mind.ServiceDefaults.csproj" />
     <ProjectReference Include="..\Mind.Application\Mind.Application.csproj" />
     <ProjectReference Include="..\Mind.Infrastructure\Mind.Infrastructure.csproj" />
+    <ProjectReference Include="..\Mind.Presentation.GraphQL\Mind.Presentation.GraphQL.csproj" />
   </ItemGroup>
 
 </Project>

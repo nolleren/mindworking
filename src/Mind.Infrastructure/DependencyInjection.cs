@@ -1,8 +1,6 @@
- using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Mind.Application.Services;
-using Mind.Core.Entities;
 using Mind.Infrastructure.Persistence;
 using Mind.Infrastructure.Services;
 

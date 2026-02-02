@@ -11,6 +11,9 @@
   <Folder Name="/Api/">
     <Project Path="src/Mind.Api/Mind.Api.csproj" />
   </Folder>
+  <Folder Name="/Presentation/">
+    <Project Path="src/Mind.Presentation.GraphQL/Mind.Presentation.GraphQL.csproj" />
+  </Folder>
   <Folder Name="/Aspire/">
     <Project Path="src/Mind.AppHost/Mind.AppHost.csproj" />
     <Project Path="src/Mind.ServiceDefaults/Mind.ServiceDefaults.csproj" />

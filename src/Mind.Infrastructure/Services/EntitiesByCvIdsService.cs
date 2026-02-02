@@ -6,16 +6,9 @@ using System.Linq.Expressions;
 
 namespace Mind.Infrastructure.Services;
 
-internal sealed class EntitiesByCvIdsService<TEntity> : IEntitiesByCvIdsService<TEntity>
+internal sealed class EntitiesByCvIdsService<TEntity>(MindDbContext db) : IEntitiesByCvIdsService<TEntity>
     where TEntity : BaseEntity
 {
-    private readonly MindDbContext _db;
-
-    public EntitiesByCvIdsService(MindDbContext db)
-    {
-        _db = db;
-    }
-
     public async Task<IReadOnlyDictionary<Guid, IReadOnlyList<TEntity>>> GetByCvIdsAsync(
         IReadOnlyCollection<Guid> cvIds,
         CancellationToken cancellationToken = default)
@@ -60,7 +53,7 @@ internal sealed class EntitiesByCvIdsService<TEntity> : IEntitiesByCvIdsService<
         CancellationToken cancellationToken)
         where T : BaseEntity
     {
-        var pairs = await _db.Cvs
+        var pairs = await db.Cvs
             .AsNoTracking()
             .Where(cv => cvIds.Contains(cv.Id))
             .SelectMany(navigation, (cv, entity) => new { CvId = cv.Id, Entity = entity })
