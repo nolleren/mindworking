@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Mind.Application;
 using Mind.Core;
 using Mind.Infrastructure;
+using Mind.Api.Cors;
 using Mind.Presentation.GraphQL;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,8 @@ builder.AddServiceDefaults();
 
 // Add services to the container.
 builder.Services.AddApplication();
+
+builder.Services.AddMindCors();
 
 builder.Services.AddInfrastructure(options =>
 {
@@ -48,13 +51,13 @@ app.MapDefaultEndpoints();
 
 app.UseHttpsRedirection();
 
+app.UseMindCors();
+
 app.UseGraphQL<MindSchema>("/graphql");
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseGraphQLGraphiQL(
-        "/ui/graphiql",
-        new GraphiQLOptions { GraphQLEndPoint = "/graphql" });
+    app.UseGraphQLGraphiQL();
 }
 
 app.Run();

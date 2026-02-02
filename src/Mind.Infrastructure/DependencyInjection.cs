@@ -12,7 +12,7 @@ public static class DependencyInjection
         this IServiceCollection services,
         Action<DbContextOptionsBuilder> configureDb)
     {
-        services.AddDbContext<MindDbContext>(configureDb);
+        services.AddPooledDbContextFactory<MindDbContext>(configureDb);
         services.AddScoped<ICvService, CvService>();
         services.AddScoped<ICompanyService, CompanyService>();
         services.AddScoped<IProjectService, ProjectService>();

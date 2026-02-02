@@ -15,9 +15,16 @@ builder
 	.WithEnvironment("ADMINER_DEFAULT_SERVER", "postgres")
 	.WaitFor(postgres);
 
-builder
+var mindApi = builder
 	.AddProject<Projects.Mind_Api>("mind-api")
 	.WithReference(mindDb)
 	.WaitFor(mindDb);
+
+builder.AddJavaScriptApp("mind-client", "../Mind.Client", runScriptName: "dev")
+    .WithReference(mindApi)
+    .WithEnvironment("BROWSER", "none")
+    .WithHttpEndpoint(env: "VITE_PORT", port: 5174, name: "vitehttp")
+    .WithExternalHttpEndpoints()
+    .PublishAsDockerFile();
 
 builder.Build().Run();

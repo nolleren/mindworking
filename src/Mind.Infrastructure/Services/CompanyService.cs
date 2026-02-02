@@ -6,11 +6,14 @@ using Mind.Infrastructure.Persistence;
 
 namespace Mind.Infrastructure.Services;
 
-internal sealed class CompanyService(MindDbContext db) : ICompanyService
+internal sealed class CompanyService(IDbContextFactory<MindDbContext> dbFactory) : ICompanyService
 {
+	private MindDbContext _context => dbFactory.CreateDbContext();
+
     public async Task<IReadOnlyList<Company>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await db.Companies
+		await using var db = _context;
+		return await db.Companies
             .AsNoTracking()
             .OrderBy(x => x.Name)
             .ToListAsync(cancellationToken);
@@ -18,37 +21,22 @@ internal sealed class CompanyService(MindDbContext db) : ICompanyService
 
     public async Task<Company?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await db.Companies
+		await using var db = _context;
+		return await db.Companies
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 
-    public Task<IReadOnlyList<Company>> CreateCompaniesAsync(IReadOnlyList<CompanyCreateInput> createRequests, CancellationToken cancellationToken = default)
-    {
-        var created = createRequests
-            .Select(x => new Company
-            {
-                Name = x.Name.Trim(),
-                Address = x.Address.Trim(),
-                ZipCode = x.ZipCode.Trim(),
-                City = x.City.Trim(),
-                Description = x.Description.Trim(),
-            })
-            .ToList();
-        db.Companies.AddRange(created);
-
-        return Task.FromResult((IReadOnlyList<Company>)created);
-    }
-
     public async Task<Company> CreateAsync(CompanyCreateInput input, CancellationToken cancellationToken = default)
     {
+		await using var db = _context;
         var entity = new Company
         {
-            Name = input.Name.Trim(),
-            Address = input.Address.Trim(),
-            ZipCode = input.ZipCode.Trim(),
-            City = input.City.Trim(),
-            Description = input.Description.Trim(),
+            Name = input.Name!.Trim(),
+            Address = input.Address!.Trim(),
+            ZipCode = input.ZipCode!.Trim(),
+            City = input.City!.Trim(),
+            Description = input.Description!.Trim(),
         };
 
         db.Companies.Add(entity);
@@ -58,12 +46,8 @@ internal sealed class CompanyService(MindDbContext db) : ICompanyService
 
     public async Task<Company> UpdateAsync(CompanyUpsertInput input, CancellationToken cancellationToken = default)
     {
-        if (input.Id == null)
-        {
-            throw new ArgumentException("Id is required for update.", nameof(input));
-        }
-
-        var id = input.Id.Value;
+		await using var db = _context;
+        var id = input.Id;
         var entity = await db.Companies.FirstOrDefaultAsync(x => x.Id == id, cancellationToken)
             ?? throw new InvalidOperationException($"Unknown company id '{id}'.");
 
@@ -79,6 +63,7 @@ internal sealed class CompanyService(MindDbContext db) : ICompanyService
 
     public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
+		await using var db = _context;
         var entity = await db.Companies.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         if (entity is null)
         {

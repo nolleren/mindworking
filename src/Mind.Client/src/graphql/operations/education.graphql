@@ -1,0 +1,51 @@
+query GetEducations {
+  educations {
+    id
+    name
+    address
+    zipCode
+    city
+    description
+    canDelete
+  }
+}
+
+query GetEducation($id: ID!) {
+  education(id: $id) {
+    id
+    name
+    address
+    zipCode
+    city
+    description
+    canDelete
+  }
+}
+
+mutation CreateEducation($input: EducationCreateInput!) {
+  createEducation(input: $input) {
+    id
+    name
+    address
+    zipCode
+    city
+    description
+    canDelete
+  }
+}
+
+mutation UpdateEducation($input: EducationUpsertInput!) {
+  updateEducation(input: $input) {
+    id
+    name
+    address
+    zipCode
+    city
+    description
+    canDelete
+  }
+}
+
+mutation DeleteEducation($id: ID!) {
+  deleteEducation(id: $id)
+}

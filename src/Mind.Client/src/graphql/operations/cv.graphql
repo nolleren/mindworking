@@ -1,0 +1,85 @@
+# Queries
+query GetCvs {
+  cvs {
+    id
+    name
+    createdAt
+    updatedAt
+    companies {
+      id
+      name
+    }
+    projects {
+      id
+      name
+    }
+    educations {
+      id
+      name
+    }
+    skills {
+      id
+      name
+    }
+  }
+}
+
+query GetCv($id: ID!) {
+  cv(id: $id) {
+    id
+    name
+    createdAt
+    updatedAt
+    companies {
+      id
+      name
+      address
+      zipCode
+      city
+      description
+    }
+    projects {
+      id
+      name
+      startDate
+      endDate
+      description
+    }
+    educations {
+      id
+      name
+      address
+      zipCode
+      city
+      description
+    }
+    skills {
+      id
+      name
+      description
+      levelOfMastery
+    }
+  }
+}
+
+# Mutations
+mutation CreateCv($input: CreateCvInput!) {
+  createCv(input: $input) {
+    id
+    name
+    createdAt
+    updatedAt
+  }
+}
+
+mutation UpdateCv($input: UpdateCvInput!) {
+  updateCv(input: $input) {
+    id
+    name
+    updatedAt
+  }
+}
+
+mutation DeleteCv($id: ID!) {
+  deleteCv(id: $id)
+}

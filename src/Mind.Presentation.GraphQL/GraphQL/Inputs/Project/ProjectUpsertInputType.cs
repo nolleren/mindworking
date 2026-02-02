@@ -9,7 +9,7 @@ public sealed class ProjectUpsertInputType : InputObjectGraphType<ProjectUpsertI
     {
         Name = "ProjectUpsertInput";
 
-        Field(x => x.Id, type: typeof(IdGraphType));
+        Field(x => x.Id, type: typeof(NonNullGraphType<IdGraphType>));
         Field(x => x.Name, type: typeof(NonNullGraphType<StringGraphType>));
         Field(x => x.StartDate, type: typeof(NonNullGraphType<DateGraphType>));
         Field(x => x.EndDate, type: typeof(NonNullGraphType<DateGraphType>));

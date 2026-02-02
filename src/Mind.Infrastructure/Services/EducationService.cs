@@ -6,10 +6,13 @@ using Mind.Infrastructure.Persistence;
 
 namespace Mind.Infrastructure.Services;
 
-internal sealed class EducationService(MindDbContext db) : IEducationService
+internal sealed class EducationService(IDbContextFactory<MindDbContext> dbFactory) : IEducationService
 {
+	private MindDbContext _context => dbFactory.CreateDbContext();
+
     public async Task<IReadOnlyList<Education>> GetAllAsync(CancellationToken cancellationToken = default)
     {
+		await using var db = _context;
         return await db.Educations
             .AsNoTracking()
             .OrderBy(x => x.Name)
@@ -18,38 +21,22 @@ internal sealed class EducationService(MindDbContext db) : IEducationService
 
     public async Task<Education?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
+		await using var db = _context;
         return await db.Educations
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 
-    public Task<IReadOnlyList<Education>> CreateEducationsAsync(IReadOnlyList<EducationCreateInput> createRequests, CancellationToken cancellationToken = default)
-    {
-        var created = createRequests
-            .Select(x => new Education
-            {
-                Name = x.Name.Trim(),
-                Address = x.Address.Trim(),
-                ZipCode = x.ZipCode.Trim(),
-                City = x.City.Trim(),
-                Description = x.Description.Trim(),
-            })
-            .ToList();
-
-        db.Educations.AddRange(created);
-
-        return Task.FromResult((IReadOnlyList<Education>)created);
-    }
-
     public async Task<Education> CreateAsync(EducationCreateInput input, CancellationToken cancellationToken = default)
     {
+		await using var db = _context;
         var entity = new Education
         {
-            Name = input.Name.Trim(),
-            Address = input.Address.Trim(),
-            ZipCode = input.ZipCode.Trim(),
-            City = input.City.Trim(),
-            Description = input.Description.Trim(),
+            Name = input.Name!.Trim(),
+            Address = input.Address!.Trim(),
+            ZipCode = input.ZipCode!.Trim(),
+            City = input.City!.Trim(),
+            Description = input.Description!.Trim(),
         };
 
         db.Educations.Add(entity);
@@ -59,12 +46,8 @@ internal sealed class EducationService(MindDbContext db) : IEducationService
 
     public async Task<Education> UpdateAsync(EducationUpsertInput input, CancellationToken cancellationToken = default)
     {
-        if (input.Id == null)
-        {
-            throw new ArgumentException("Id is required for update.", nameof(input));
-        }
-
-        var id = input.Id.Value;
+		await using var db = _context;
+        var id = input.Id;
         var entity = await db.Educations.FirstOrDefaultAsync(x => x.Id == id, cancellationToken)
             ?? throw new InvalidOperationException($"Unknown education id '{id}'.");
 
@@ -80,6 +63,7 @@ internal sealed class EducationService(MindDbContext db) : IEducationService
 
     public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
+		await using var db = _context;
         var entity = await db.Educations.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         if (entity is null)
         {

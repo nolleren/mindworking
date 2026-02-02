@@ -1,0 +1,47 @@
+query GetProjects {
+  projects {
+    id
+    name
+    startDate
+    endDate
+    description
+    canDelete
+  }
+}
+
+query GetProject($id: ID!) {
+  project(id: $id) {
+    id
+    name
+    startDate
+    endDate
+    description
+    canDelete
+  }
+}
+
+mutation CreateProject($input: ProjectCreateInput!) {
+  createProject(input: $input) {
+    id
+    name
+    startDate
+    endDate
+    description
+    canDelete
+  }
+}
+
+mutation UpdateProject($input: ProjectUpsertInput!) {
+  updateProject(input: $input) {
+    id
+    name
+    startDate
+    endDate
+    description
+    canDelete
+  }
+}
+
+mutation DeleteProject($id: ID!) {
+  deleteProject(id: $id)
+}

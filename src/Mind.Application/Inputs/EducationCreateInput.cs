@@ -1,3 +1,5 @@
+using Mind.Core.Entities;
+
 namespace Mind.Application.Inputs;
 
 public sealed class EducationCreateInput
@@ -7,4 +9,16 @@ public sealed class EducationCreateInput
     public required string ZipCode { get; init; }
     public required string City { get; init; }
     public required string Description { get; init; }
+
+    public Education ToEducation()
+    {
+        return new Education
+        {
+            Name = this.Name,
+            Address = this.Address,
+            ZipCode = this.ZipCode,
+            City = this.City,
+            Description = this.Description
+        };
+    }
 }

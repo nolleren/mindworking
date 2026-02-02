@@ -29,6 +29,12 @@ secrets.json
 
 # Logs
 *.log
+logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
 # Test results
 TestResults/
@@ -36,8 +42,20 @@ TestResults/
 # EF
 **/Migrations/*.csproj
 
-# Node (if any tooling gets added later)
+# Node / Frontend
 node_modules/
+dist/
+dist-ssr/
+*.local
+.tanstack/
+
+# GraphQL Generated
+src/graphql/generated/
+
+# Frontend editor files
+*.ntvs*
+*.njsproj
+*.sw?
 
 # Aspire / containers (local state)
 **/.aspire/

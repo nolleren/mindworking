@@ -10,9 +10,9 @@ public sealed class CvCreateInputType : InputObjectGraphType<CvCreateInput>
         Name = "CreateCvInput";
 
         Field(x => x.Name, type: typeof(NonNullGraphType<StringGraphType>));
-        Field(x => x.Companies, type: typeof(ListGraphType<NonNullGraphType<CompanyCreateInputType>>));
-        Field(x => x.Projects, type: typeof(ListGraphType<NonNullGraphType<ProjectCreateInputType>>));
-        Field(x => x.Educations, type: typeof(ListGraphType<NonNullGraphType<EducationCreateInputType>>));
-        Field(x => x.Skills, type: typeof(ListGraphType<NonNullGraphType<SkillsCreateInputType>>));
+        Field(x => x.Companies, type: typeof(ListGraphType<NonNullGraphType<IdGraphType>>));
+        Field(x => x.Projects, type: typeof(ListGraphType<NonNullGraphType<IdGraphType>>));
+        Field(x => x.Educations, type: typeof(ListGraphType<NonNullGraphType<IdGraphType>>));
+        Field(x => x.Skills, type: typeof(ListGraphType<NonNullGraphType<IdGraphType>>));
     }
 }

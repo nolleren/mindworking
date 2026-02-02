@@ -7,7 +7,6 @@ public interface ICompanyService
 {
     Task<IReadOnlyList<Company>> GetAllAsync(CancellationToken cancellationToken = default);
     Task<Company?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
-    Task<IReadOnlyList<Company>> CreateCompaniesAsync(IReadOnlyList<CompanyCreateInput> createRequests, CancellationToken cancellationToken = default);
     Task<Company> CreateAsync(CompanyCreateInput input, CancellationToken cancellationToken = default);
     Task<Company> UpdateAsync(CompanyUpsertInput input, CancellationToken cancellationToken = default);
     Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default);

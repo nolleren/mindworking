@@ -1,0 +1,43 @@
+query GetSkills {
+  skills {
+    id
+    name
+    description
+    levelOfMastery
+    canDelete
+  }
+}
+
+query GetSkill($id: ID!) {
+  skill(id: $id) {
+    id
+    name
+    description
+    levelOfMastery
+    canDelete
+  }
+}
+
+mutation CreateSkill($input: SkillCreateInput!) {
+  createSkill(input: $input) {
+    id
+    name
+    description
+    levelOfMastery
+    canDelete
+  }
+}
+
+mutation UpdateSkill($input: SkillUpsertInput!) {
+  updateSkill(input: $input) {
+    id
+    name
+    description
+    levelOfMastery
+    canDelete
+  }
+}
+
+mutation DeleteSkill($id: ID!) {
+  deleteSkill(id: $id)
+}

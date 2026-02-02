@@ -10,7 +10,7 @@ public sealed class SkillUpsertInputType : InputObjectGraphType<SkillUpsertInput
     {
         Name = "SkillUpsertInput";
 
-        Field(x => x.Id, type: typeof(IdGraphType));
+        Field(x => x.Id, type: typeof(NonNullGraphType<IdGraphType>));
         Field(x => x.Name, type: typeof(NonNullGraphType<StringGraphType>));
         Field(x => x.Description, type: typeof(NonNullGraphType<StringGraphType>));
         Field(x => x.LevelOfMastery, type: typeof(NonNullGraphType<SkillMasteryLevelEnumType>));

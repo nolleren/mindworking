@@ -7,7 +7,6 @@ public interface IProjectService
 {
     Task<IReadOnlyList<Project>> GetAllAsync(CancellationToken cancellationToken = default);
     Task<Project?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
-    Task<IReadOnlyList<Project>> CreateProjectsAsync(IReadOnlyList<ProjectCreateInput> createRequests, CancellationToken cancellationToken = default);
     Task<Project> CreateAsync(ProjectCreateInput input, CancellationToken cancellationToken = default);
     Task<Project> UpdateAsync(ProjectUpsertInput input, CancellationToken cancellationToken = default);
     Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default);

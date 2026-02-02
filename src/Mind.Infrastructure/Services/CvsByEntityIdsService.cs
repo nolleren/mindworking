@@ -6,9 +6,11 @@ using System.Linq.Expressions;
 
 namespace Mind.Infrastructure.Services;
 
-internal sealed class CvsByEntityIdsService<TEntity>(MindDbContext db) : ICvsByEntityIdsService<TEntity>
+internal sealed class CvsByEntityIdsService<TEntity>(IDbContextFactory<MindDbContext> dbFactory) : ICvsByEntityIdsService<TEntity>
     where TEntity : BaseEntity
 {
+	private MindDbContext _context => dbFactory.CreateDbContext();
+
     public Task<IReadOnlyDictionary<Guid, IReadOnlyList<Cv>>> GetCvsByEntityIdsAsync(
         IReadOnlyCollection<Guid> entityIds,
         CancellationToken cancellationToken = default)
@@ -49,7 +51,8 @@ internal sealed class CvsByEntityIdsService<TEntity>(MindDbContext db) : ICvsByE
         CancellationToken cancellationToken)
         where T : BaseEntity
     {
-        var pairs = await db.Set<T>()
+		await using var db = _context;
+		var pairs = await db.Set<T>()
             .AsNoTracking()
             .Where(e => entityIds.Contains(e.Id))
             .SelectMany(navigation, (entity, cv) => new { EntityId = entity.Id, Cv = cv })

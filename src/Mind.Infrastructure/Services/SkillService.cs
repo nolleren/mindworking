@@ -6,10 +6,13 @@ using Mind.Infrastructure.Persistence;
 
 namespace Mind.Infrastructure.Services;
 
-internal sealed class SkillService(MindDbContext db) : ISkillService
+internal sealed class SkillService(IDbContextFactory<MindDbContext> dbFactory) : ISkillService
 {
+	private MindDbContext _context => dbFactory.CreateDbContext();
+
     public async Task<IReadOnlyList<Skill>> GetAllAsync(CancellationToken cancellationToken = default)
     {
+		await using var db = _context;
         return await db.Skills
             .AsNoTracking()
             .OrderBy(x => x.Name)
@@ -18,29 +21,15 @@ internal sealed class SkillService(MindDbContext db) : ISkillService
 
     public async Task<Skill?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
+		await using var db = _context;
         return await db.Skills
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 
-    public Task<IReadOnlyList<Skill>> CreateSkillsAsync(IReadOnlyList<SkillCreateInput> createRequests, CancellationToken cancellationToken = default)
-    {
-        var created = createRequests
-            .Select(x => new Skill
-            {
-                Name = x.Name.Trim(),
-                Description = x.Description.Trim(),
-                LevelOfMastery = x.LevelOfMastery,
-            })
-            .ToList();
-
-        db.Skills.AddRange(created);
-
-        return Task.FromResult((IReadOnlyList<Skill>)created);
-    }
-
     public async Task<Skill> CreateAsync(SkillCreateInput input, CancellationToken cancellationToken = default)
     {
+		await using var db = _context;
         var entity = new Skill
         {
             Name = input.Name.Trim(),
@@ -55,12 +44,8 @@ internal sealed class SkillService(MindDbContext db) : ISkillService
 
     public async Task<Skill> UpdateAsync(SkillUpsertInput input, CancellationToken cancellationToken = default)
     {
-        if (input.Id == null)
-        {
-            throw new ArgumentException("Id is required for update.", nameof(input));
-        }
-
-        var id = input.Id.Value;
+		await using var db = _context;
+        var id = input.Id;
         var entity = await db.Skills.FirstOrDefaultAsync(x => x.Id == id, cancellationToken)
             ?? throw new InvalidOperationException($"Unknown skill id '{id}'.");
 
@@ -74,6 +59,7 @@ internal sealed class SkillService(MindDbContext db) : ISkillService
 
     public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
+		await using var db = _context;
         var entity = await db.Skills.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         if (entity is null)
         {

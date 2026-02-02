@@ -6,10 +6,13 @@ using Mind.Infrastructure.Persistence;
 
 namespace Mind.Infrastructure.Services;
 
-internal sealed class ProjectService(MindDbContext db) : IProjectService
+internal sealed class ProjectService(IDbContextFactory<MindDbContext> dbFactory) : IProjectService
 {
+	private MindDbContext _context => dbFactory.CreateDbContext();
+
     public async Task<IReadOnlyList<Project>> GetAllAsync(CancellationToken cancellationToken = default)
     {
+		await using var db = _context;
         return await db.Projects
             .AsNoTracking()
             .OrderBy(x => x.Name)
@@ -18,33 +21,18 @@ internal sealed class ProjectService(MindDbContext db) : IProjectService
 
     public async Task<Project?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
+		await using var db = _context;
         return await db.Projects
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 
-    public Task<IReadOnlyList<Project>> CreateProjectsAsync(IReadOnlyList<ProjectCreateInput> createRequests, CancellationToken cancellationToken = default)
-    {
-        var created = createRequests
-            .Select(x => new Project
-            {
-                Name = x.Name.Trim(),
-                StartDate = x.StartDate,
-                EndDate = x.EndDate,
-                Description = x.Description.Trim(),
-            })
-            .ToList();
-
-        db.Projects.AddRange(created);
-
-        return Task.FromResult((IReadOnlyList<Project>)created);
-    }
-
     public async Task<Project> CreateAsync(ProjectCreateInput input, CancellationToken cancellationToken = default)
     {
+		await using var db = _context;
         var entity = new Project
         {
-            Name = input.Name.Trim(),
+            Name = input.Name!.Trim(),
             StartDate = input.StartDate,
             EndDate = input.EndDate,
             Description = input.Description.Trim(),
@@ -57,12 +45,8 @@ internal sealed class ProjectService(MindDbContext db) : IProjectService
 
     public async Task<Project> UpdateAsync(ProjectUpsertInput input, CancellationToken cancellationToken = default)
     {
-        if (input.Id == null)
-        {
-            throw new ArgumentException("Id is required for update.", nameof(input));
-        }
-
-        var id = input.Id.Value;
+		await using var db = _context;
+        var id = input.Id;
         var entity = await db.Projects.FirstOrDefaultAsync(x => x.Id == id, cancellationToken)
             ?? throw new InvalidOperationException($"Unknown project id '{id}'.");
 
@@ -77,6 +61,7 @@ internal sealed class ProjectService(MindDbContext db) : IProjectService
 
     public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
+		await using var db = _context;
         var entity = await db.Projects.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         if (entity is null)
         {
