@@ -37,11 +37,9 @@ export function RelationList({
   const labels = typeLabels[type];
 
   const handleOpenAdd = () => {
-    console.log('handleOpenAdd called');
     setModalMode('select');
     setEditingEntity(undefined);
     setModalOpen(true);
-    console.log('Modal should be open now');
   };
 
   const handleEdit = (entity: RelationEntity) => {
@@ -51,7 +49,7 @@ export function RelationList({
   };
 
   const handleModalSubmit = async (data: unknown) => {
-    if (modalMode === 'edit' && editingEntity) {
+    if (modalMode === 'edit' && editingEntity && editingEntity.id) {
       const editData = { ...(data as Record<string, unknown>), id: editingEntity.id };
       await onEdit(editingEntity, editData);
     } else if (modalMode === 'create') {
@@ -64,6 +62,13 @@ export function RelationList({
   const handleModalSelect = async (entityIds: string[]) => {
     await onAdd(entityIds);
     setModalOpen(false);
+  };
+
+  // Ny funktion til at åbne modal i 'create' mode
+  const handleOpenCreate = () => {
+    setModalMode('create');
+    setEditingEntity(undefined);
+    setModalOpen(true);
   };
 
   return (
@@ -108,6 +113,8 @@ export function RelationList({
         availableEntities={availableEntities}
         onSubmit={handleModalSubmit}
         onSelect={handleModalSelect}
+        // Injecter en prop til at åbne 'create' mode fra modal
+        openCreate={handleOpenCreate}
       />
     </div>
   );

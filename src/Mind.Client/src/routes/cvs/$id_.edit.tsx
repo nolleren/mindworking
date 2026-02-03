@@ -141,6 +141,7 @@ function EditCvPage() {
   };
 
   const handleCreateCompany = async (data: unknown) => {
+    console.log('CV.handleCreateCompany', data);
     const created = await createEntity('company', data as CompanyCreateInput);
     if (created) {
       setSelectedCompanies((prev) => [...prev, created as Company]);
@@ -148,7 +149,12 @@ function EditCvPage() {
   };
 
   const handleEditCompany = async (_entity: RelationEntity, data: unknown) => {
-    await updateEntity('company', data as CompanyUpsertInput);
+    const updated = await updateEntity('company', data as CompanyUpsertInput);
+    if (updated) {
+      setSelectedCompanies((prev) =>
+        prev.map((c) => (c.id === _entity.id ? (updated as Company) : c))
+      );
+    }
   };
 
   const handleDeleteCompany = async (companyId: string) => {
@@ -162,6 +168,7 @@ function EditCvPage() {
   };
 
   const handleCreateEducation = async (data: unknown) => {
+    console.log('CV.handleCreateEducation', data);
     const created = await createEntity('education', data as EducationCreateInput);
     if (created) {
       setSelectedEducations((prev) => [...prev, created as Education]);
@@ -169,7 +176,12 @@ function EditCvPage() {
   };
 
   const handleEditEducation = async (_entity: RelationEntity, data: unknown) => {
-    await updateEntity('education', data as EducationUpsertInput);
+    const updated = await updateEntity('education', data as EducationUpsertInput);
+    if (updated) {
+      setSelectedEducations((prev) =>
+        prev.map((e) => (e.id === _entity.id ? (updated as Education) : e))
+      );
+    }
   };
 
   const handleDeleteEducation = async (educationId: string) => {
@@ -183,6 +195,7 @@ function EditCvPage() {
   };
 
   const handleCreateProject = async (data: unknown) => {
+    console.log('CV.handleCreateProject', data);
     const created = await createEntity('project', data as ProjectCreateInput);
     if (created) {
       setSelectedProjects((prev) => [...prev, created as Project]);
@@ -190,7 +203,12 @@ function EditCvPage() {
   };
 
   const handleEditProject = async (_entity: RelationEntity, data: unknown) => {
-    await updateEntity('project', data as ProjectUpsertInput);
+    const updated = await updateEntity('project', data as ProjectUpsertInput);
+    if (updated) {
+      setSelectedProjects((prev) =>
+        prev.map((p) => (p.id === _entity.id ? (updated as Project) : p))
+      );
+    }
   };
 
   const handleDeleteProject = async (projectId: string) => {
@@ -204,6 +222,7 @@ function EditCvPage() {
   };
 
   const handleCreateSkill = async (data: unknown) => {
+    console.log('CV.handleCreateSkill', data);
     const created = await createEntity('skill', data as SkillCreateInput);
     if (created) {
       setSelectedSkills((prev) => [...prev, created as Skill]);
@@ -211,7 +230,10 @@ function EditCvPage() {
   };
 
   const handleEditSkill = async (_entity: RelationEntity, data: unknown) => {
-    await updateEntity('skill', data as SkillUpsertInput);
+    const updated = await updateEntity('skill', data as SkillUpsertInput);
+    if (updated) {
+      setSelectedSkills((prev) => prev.map((s) => (s.id === _entity.id ? (updated as Skill) : s)));
+    }
   };
 
   const handleDeleteSkill = async (skillId: string) => {

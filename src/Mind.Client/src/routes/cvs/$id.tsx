@@ -133,7 +133,7 @@ function CvDetailsPage() {
         )}
       </Card>
 
-      <Card title="Kompetencer">
+      <Card title="Færdigheder">
         {cv.skills?.length ? (
           <ul className="divide-y">
             {cv.skills.map((skill) => (
@@ -147,7 +147,7 @@ function CvDetailsPage() {
             ))}
           </ul>
         ) : (
-          <div className="text-gray-600">Ingen kompetencer tilknyttet</div>
+          <div className="text-gray-600">Ingen færdigheder tilknyttet</div>
         )}
       </Card>
     </div>

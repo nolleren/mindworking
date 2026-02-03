@@ -61,7 +61,7 @@ function CreateCvPage() {
   const [selectedProjects, setSelectedProjects] = useState<Project[]>([]);
   const [selectedSkills, setSelectedSkills] = useState<Skill[]>([]);
 
-  const { createEntity, getAvailableEntities } = useRelationCrud();
+  const { createEntity, updateEntity, getAvailableEntities } = useRelationCrud();
 
   const availableCompanies = getAvailableEntities(
     allCompanies,
@@ -126,7 +126,7 @@ function CreateCvPage() {
   };
 
   const handleEditCompany = async (_entity: RelationEntity, data: unknown) => {
-    const updated = await createEntity('company', data as CompanyUpsertInput);
+    const updated = await updateEntity('company', data as CompanyUpsertInput);
     if (updated) {
       setSelectedCompanies((prev) =>
         prev.map((c) => (c.id === _entity.id ? (updated as Company) : c))
@@ -152,7 +152,7 @@ function CreateCvPage() {
   };
 
   const handleEditEducation = async (_entity: RelationEntity, data: unknown) => {
-    const updated = await createEntity('education', data as EducationUpsertInput);
+    const updated = await updateEntity('education', data as EducationUpsertInput);
     if (updated) {
       setSelectedEducations((prev) =>
         prev.map((e) => (e.id === _entity.id ? (updated as Education) : e))
@@ -178,7 +178,7 @@ function CreateCvPage() {
   };
 
   const handleEditProject = async (_entity: RelationEntity, data: unknown) => {
-    const updated = await createEntity('project', data as ProjectUpsertInput);
+    const updated = await updateEntity('project', data as ProjectUpsertInput);
     if (updated) {
       setSelectedProjects((prev) =>
         prev.map((p) => (p.id === _entity.id ? (updated as Project) : p))
@@ -204,7 +204,7 @@ function CreateCvPage() {
   };
 
   const handleEditSkill = async (_entity: RelationEntity, data: unknown) => {
-    const updated = await createEntity('skill', data as SkillUpsertInput);
+    const updated = await updateEntity('skill', data as SkillUpsertInput);
     if (updated) {
       setSelectedSkills((prev) => prev.map((s) => (s.id === _entity.id ? (updated as Skill) : s)));
     }

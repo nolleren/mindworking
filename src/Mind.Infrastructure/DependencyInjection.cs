@@ -23,6 +23,7 @@ public static class DependencyInjection
         services.AddScoped(typeof(ICvsByEntityIdsService<>), typeof(CvsByEntityIdsService<>));
 
         services.AddHostedService<DatabaseMigratorHostedService>();
+        services.AddHostedService<SeedDataHostedService>();
         return services;
     }
 }

@@ -24,6 +24,7 @@ interface RelationModalProps {
   availableEntities?: RelationEntity[];
   onSubmit: (data: unknown) => Promise<void>;
   onSelect?: (entityIds: string[]) => Promise<void>;
+  openCreate?: () => void;
 }
 
 const normalizeDateInput = (value?: string | null) => {
@@ -145,6 +146,7 @@ export function RelationModal({
   availableEntities = [],
   onSubmit,
   onSelect,
+  openCreate,
 }: RelationModalProps) {
   const [activeTab, setActiveTab] = useState<'select' | 'create'>(
     mode === 'select' ? 'select' : 'create'
@@ -286,7 +288,10 @@ export function RelationModal({
               Vælg Eksisterende
             </button>
             <button
-              onClick={() => setActiveTab('create')}
+              onClick={() => {
+                setActiveTab('create');
+                if (openCreate) openCreate();
+              }}
               className={`whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium ${
                 activeTab === 'create'
                   ? 'border-blue-500 text-blue-600'
