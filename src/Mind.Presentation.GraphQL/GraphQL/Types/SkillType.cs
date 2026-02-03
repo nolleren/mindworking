@@ -14,7 +14,7 @@ public sealed class SkillType : ObjectGraphType<Skill>
 
         Field(x => x.Id, type: typeof(NonNullGraphType<IdGraphType>));
         Field(x => x.Name);
-        Field(x => x.Description, nullable: true);
+        Field(x => x.Description);
 
         Field<NonNullGraphType<SkillMasteryLevelEnumType>>("levelOfMastery")
             .Resolve(ctx => ctx.Source.LevelOfMastery);

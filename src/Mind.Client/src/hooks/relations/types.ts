@@ -1,8 +1,4 @@
 import type {
-  Company,
-  Education,
-  Project,
-  Skill,
   CompanyCreateInput,
   EducationCreateInput,
   ProjectCreateInput,
@@ -11,10 +7,16 @@ import type {
   EducationUpsertInput,
   ProjectUpsertInput,
   SkillUpsertInput,
+  GetCvQuery,
 } from '../../graphql/generated/types';
 
 export type RelationType = 'company' | 'education' | 'project' | 'skill';
-export type RelationEntity = Company | Education | Project | Skill;
+
+export type RelationEntity =
+  | NonNullable<NonNullable<Required<GetCvQuery>['cv']>['companies']>[number]
+  | NonNullable<NonNullable<Required<GetCvQuery>['cv']>['educations']>[number]
+  | NonNullable<NonNullable<Required<GetCvQuery>['cv']>['projects']>[number]
+  | NonNullable<NonNullable<Required<GetCvQuery>['cv']>['skills']>[number];
 
 export type CreateInputMap = {
   company: CompanyCreateInput;

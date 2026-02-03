@@ -16,7 +16,7 @@ public sealed class ProjectType : ObjectGraphType<Project>
         Field(x => x.Name);
         Field(x => x.StartDate, type: typeof(DateTimeGraphType));
         Field(x => x.EndDate, type: typeof(DateTimeGraphType));
-        Field(x => x.Description, nullable: true);
+        Field(x => x.Description);
         Field(x => x.CreatedAt, type: typeof(NonNullGraphType<DateTimeGraphType>));
         Field(x => x.UpdatedAt, type: typeof(NonNullGraphType<DateTimeGraphType>));
 

@@ -11,9 +11,9 @@ public sealed class CvUpdateInputType : InputObjectGraphType<CvUpdateInput>
 
         Field(x => x.Id, type: typeof(NonNullGraphType<IdGraphType>));
         Field(x => x.Name, type: typeof(NonNullGraphType<StringGraphType>));
-        Field(x => x.Companies, type: typeof(ListGraphType<NonNullGraphType<IdGraphType>>));
-        Field(x => x.Projects, type: typeof(ListGraphType<NonNullGraphType<IdGraphType>>));
-        Field(x => x.Educations, type: typeof(ListGraphType<NonNullGraphType<IdGraphType>>));
-        Field(x => x.Skills, type: typeof(ListGraphType<NonNullGraphType<IdGraphType>>));
+        Field(x => x.Companies, type: typeof(NonNullGraphType<ListGraphType<NonNullGraphType<IdGraphType>>>));
+        Field(x => x.Projects, type: typeof(NonNullGraphType<ListGraphType<NonNullGraphType<IdGraphType>>>));
+        Field(x => x.Educations, type: typeof(NonNullGraphType<ListGraphType<NonNullGraphType<IdGraphType>>>));
+        Field(x => x.Skills, type: typeof(NonNullGraphType<ListGraphType<NonNullGraphType<IdGraphType>>>));
     }
 }

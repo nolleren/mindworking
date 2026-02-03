@@ -4,13 +4,21 @@ import { RelationItem } from './RelationItem';
 import { RelationModal } from './RelationModal';
 import type { RelationEntity, RelationType } from '../../hooks/relations/types';
 
+import type { GetCvQuery } from '../../graphql/generated/types';
+
+type EntityType =
+  | NonNullable<NonNullable<Required<GetCvQuery>['cv']>['companies']>[number]
+  | NonNullable<NonNullable<Required<GetCvQuery>['cv']>['educations']>[number]
+  | NonNullable<NonNullable<Required<GetCvQuery>['cv']>['projects']>[number]
+  | NonNullable<NonNullable<Required<GetCvQuery>['cv']>['skills']>[number];
+
 interface RelationListProps {
   type: RelationType;
-  entities: RelationEntity[];
-  availableEntities: RelationEntity[];
+  entities: EntityType[];
+  availableEntities: EntityType[];
   onAdd: (entityIds: string[]) => Promise<void>;
   onCreate: (data: unknown) => Promise<void>;
-  onEdit: (entity: RelationEntity, data: unknown) => Promise<void>;
+  onEdit: (entity: EntityType, data: unknown) => Promise<void>;
   onDelete: (entityId: string) => Promise<void>;
 }
 

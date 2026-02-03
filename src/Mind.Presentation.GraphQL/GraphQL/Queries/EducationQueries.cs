@@ -10,7 +10,7 @@ internal static class EducationQueries
 {
     public static void AddEducationQueries(this ObjectGraphType root)
     {
-        root.Field<ListGraphType<NonNullGraphType<EducationType>>>("educations")
+        root.Field<NonNullGraphType<ListGraphType<NonNullGraphType<EducationType>>>>("educations")
             .ResolveAsync(async context =>
             {
                 var services = context.RequestServices ?? throw new InvalidOperationException("RequestServices is not available.");

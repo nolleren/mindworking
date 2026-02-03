@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import {
   useGetCompaniesQuery,
   useGetCvQuery,
@@ -22,6 +22,11 @@ import {
   type ProjectUpsertInput,
   type SkillUpsertInput,
   type UpdateCvInput,
+  GetCvQuery,
+  GetCompaniesQuery,
+  GetEducationsQuery,
+  GetProjectsQuery,
+  GetSkillsQuery,
 } from '../../graphql/generated/types';
 import { cvSchema, type CvFormData } from '../../schemas/cv.schema';
 import { Input } from '../../components/ui/Input';
@@ -31,52 +36,81 @@ import { RelationList } from '../../components/relations/RelationList';
 import { useRelationCrud, type RelationEntity } from '../../hooks/relations/useRelationCrud';
 
 export const Route = createFileRoute('/cvs/$id_/edit')({
-  component: EditCvPage,
+  component: EditCvPageContainer,
 });
 
-function EditCvPage() {
+function EditCvPageContainer() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
 
-  console.log('EditCvPage loaded with id:', id);
-
-  const {
-    data,
-    loading: queryLoading,
-    error,
-  } = useGetCvQuery({
-    variables: { id },
-  });
-
+  const { data, loading: queryLoading, error } = useGetCvQuery({ variables: { id } });
   const { data: companiesData } = useGetCompaniesQuery();
   const { data: educationsData } = useGetEducationsQuery();
   const { data: projectsData } = useGetProjectsQuery();
   const { data: skillsData } = useGetSkillsQuery();
 
-  const allCompanies = useMemo(
-    () => (companiesData?.companies ?? []) as Company[],
-    [companiesData]
-  );
-  const allEducations = useMemo(
-    () => (educationsData?.educations ?? []) as Education[],
-    [educationsData]
-  );
-  const allProjects = useMemo(() => (projectsData?.projects ?? []) as Project[], [projectsData]);
-  const allSkills = useMemo(() => (skillsData?.skills ?? []) as Skill[], [skillsData]);
+  // Show loading if any query is still loading
+  const isLoading =
+    queryLoading || !companiesData || !educationsData || !projectsData || !skillsData;
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-gray-600">Indlæser...</div>
+      </div>
+    );
+  }
+  if (error || !data?.cv) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-red-600">Kunne ikke indlæse CV</div>
+      </div>
+    );
+  }
 
-  // Local state for relations during editing - initialize with CV data
-  const [selectedCompanies, setSelectedCompanies] = useState<Company[]>(
-    () => (data?.cv?.companies ?? []) as Company[]
+  return (
+    <EditCvPage
+      cv={data.cv}
+      companies={companiesData?.companies ?? []}
+      educations={educationsData?.educations ?? []}
+      projects={projectsData?.projects ?? []}
+      skills={skillsData?.skills ?? []}
+      navigate={navigate}
+      id={id}
+    />
   );
-  const [selectedEducations, setSelectedEducations] = useState<Education[]>(
-    () => (data?.cv?.educations ?? []) as Education[]
+}
+
+type EditCvPageProps = {
+  cv: GetCvQuery['cv'];
+  companies: GetCompaniesQuery['companies'];
+  educations: GetEducationsQuery['educations'];
+  projects: GetProjectsQuery['projects'];
+  skills: GetSkillsQuery['skills'];
+  navigate: ReturnType<typeof useNavigate>;
+  id: string;
+};
+
+function EditCvPage({
+  cv,
+  companies,
+  educations,
+  projects,
+  skills,
+  navigate,
+  id,
+}: EditCvPageProps) {
+  type CompanyEntity = NonNullable<NonNullable<Required<GetCvQuery>['cv']>['companies']>[number];
+  type EducationEntity = NonNullable<NonNullable<Required<GetCvQuery>['cv']>['educations']>[number];
+  type ProjectEntity = NonNullable<NonNullable<Required<GetCvQuery>['cv']>['projects']>[number];
+  type SkillEntity = NonNullable<NonNullable<Required<GetCvQuery>['cv']>['skills']>[number];
+
+  // Local state for relations during editing
+  const [selectedCompanies, setSelectedCompanies] = useState<CompanyEntity[]>(cv?.companies ?? []);
+  const [selectedEducations, setSelectedEducations] = useState<EducationEntity[]>(
+    cv?.educations ?? []
   );
-  const [selectedProjects, setSelectedProjects] = useState<Project[]>(
-    () => (data?.cv?.projects ?? []) as Project[]
-  );
-  const [selectedSkills, setSelectedSkills] = useState<Skill[]>(
-    () => (data?.cv?.skills ?? []) as Skill[]
-  );
+  const [selectedProjects, setSelectedProjects] = useState<ProjectEntity[]>(cv?.projects ?? []);
+  const [selectedSkills, setSelectedSkills] = useState<SkillEntity[]>(cv?.skills ?? []);
 
   const [updateCv] = useUpdateCvMutation({
     refetchQueries: ['GetCv', 'GetCvs'],
@@ -85,19 +119,19 @@ function EditCvPage() {
   const { createEntity, updateEntity, getAvailableEntities } = useRelationCrud();
 
   const availableCompanies = getAvailableEntities(
-    allCompanies,
+    companies,
     selectedCompanies.map((c) => c.id)
   );
   const availableEducations = getAvailableEntities(
-    allEducations,
+    educations,
     selectedEducations.map((e) => e.id)
   );
   const availableProjects = getAvailableEntities(
-    allProjects,
+    projects,
     selectedProjects.map((p) => p.id)
   );
   const availableSkills = getAvailableEntities(
-    allSkills,
+    skills,
     selectedSkills.map((s) => s.id)
   );
 
@@ -107,9 +141,9 @@ function EditCvPage() {
     formState: { errors },
   } = useForm<CvFormData>({
     resolver: yupResolver(cvSchema),
-    values: data?.cv
+    values: cv
       ? {
-          name: data.cv.name,
+          name: cv.name,
         }
       : undefined,
   });
@@ -136,12 +170,11 @@ function EditCvPage() {
 
   // Company handlers
   const handleAddCompanies = async (companyIds: string[]) => {
-    const newCompanies = allCompanies.filter((c) => companyIds.includes(c.id));
+    const newCompanies = companies.filter((c) => companyIds.includes(c.id));
     setSelectedCompanies((prev) => [...prev, ...newCompanies]);
   };
 
   const handleCreateCompany = async (data: unknown) => {
-    console.log('CV.handleCreateCompany', data);
     const created = await createEntity('company', data as CompanyCreateInput);
     if (created) {
       setSelectedCompanies((prev) => [...prev, created as Company]);
@@ -149,12 +182,7 @@ function EditCvPage() {
   };
 
   const handleEditCompany = async (_entity: RelationEntity, data: unknown) => {
-    const updated = await updateEntity('company', data as CompanyUpsertInput);
-    if (updated) {
-      setSelectedCompanies((prev) =>
-        prev.map((c) => (c.id === _entity.id ? (updated as Company) : c))
-      );
-    }
+    await updateEntity('company', data as CompanyUpsertInput);
   };
 
   const handleDeleteCompany = async (companyId: string) => {
@@ -163,12 +191,11 @@ function EditCvPage() {
 
   // Education handlers
   const handleAddEducations = async (educationIds: string[]) => {
-    const newEducations = allEducations.filter((e) => educationIds.includes(e.id));
+    const newEducations = educations.filter((e) => educationIds.includes(e.id));
     setSelectedEducations((prev) => [...prev, ...newEducations]);
   };
 
   const handleCreateEducation = async (data: unknown) => {
-    console.log('CV.handleCreateEducation', data);
     const created = await createEntity('education', data as EducationCreateInput);
     if (created) {
       setSelectedEducations((prev) => [...prev, created as Education]);
@@ -176,12 +203,7 @@ function EditCvPage() {
   };
 
   const handleEditEducation = async (_entity: RelationEntity, data: unknown) => {
-    const updated = await updateEntity('education', data as EducationUpsertInput);
-    if (updated) {
-      setSelectedEducations((prev) =>
-        prev.map((e) => (e.id === _entity.id ? (updated as Education) : e))
-      );
-    }
+    await updateEntity('education', data as EducationUpsertInput);
   };
 
   const handleDeleteEducation = async (educationId: string) => {
@@ -190,12 +212,11 @@ function EditCvPage() {
 
   // Project handlers
   const handleAddProjects = async (projectIds: string[]) => {
-    const newProjects = allProjects.filter((p) => projectIds.includes(p.id));
+    const newProjects = projects.filter((p) => projectIds.includes(p.id));
     setSelectedProjects((prev) => [...prev, ...newProjects]);
   };
 
   const handleCreateProject = async (data: unknown) => {
-    console.log('CV.handleCreateProject', data);
     const created = await createEntity('project', data as ProjectCreateInput);
     if (created) {
       setSelectedProjects((prev) => [...prev, created as Project]);
@@ -203,12 +224,7 @@ function EditCvPage() {
   };
 
   const handleEditProject = async (_entity: RelationEntity, data: unknown) => {
-    const updated = await updateEntity('project', data as ProjectUpsertInput);
-    if (updated) {
-      setSelectedProjects((prev) =>
-        prev.map((p) => (p.id === _entity.id ? (updated as Project) : p))
-      );
-    }
+    await updateEntity('project', data as ProjectUpsertInput);
   };
 
   const handleDeleteProject = async (projectId: string) => {
@@ -217,12 +233,11 @@ function EditCvPage() {
 
   // Skill handlers
   const handleAddSkills = async (skillIds: string[]) => {
-    const newSkills = allSkills.filter((s) => skillIds.includes(s.id));
+    const newSkills = skills.filter((s) => skillIds.includes(s.id));
     setSelectedSkills((prev) => [...prev, ...newSkills]);
   };
 
   const handleCreateSkill = async (data: unknown) => {
-    console.log('CV.handleCreateSkill', data);
     const created = await createEntity('skill', data as SkillCreateInput);
     if (created) {
       setSelectedSkills((prev) => [...prev, created as Skill]);
@@ -230,31 +245,12 @@ function EditCvPage() {
   };
 
   const handleEditSkill = async (_entity: RelationEntity, data: unknown) => {
-    const updated = await updateEntity('skill', data as SkillUpsertInput);
-    if (updated) {
-      setSelectedSkills((prev) => prev.map((s) => (s.id === _entity.id ? (updated as Skill) : s)));
-    }
+    await updateEntity('skill', data as SkillUpsertInput);
   };
 
   const handleDeleteSkill = async (skillId: string) => {
     setSelectedSkills((prev) => prev.filter((s) => s.id !== skillId));
   };
-
-  if (queryLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-gray-600">Indlæser...</div>
-      </div>
-    );
-  }
-
-  if (error || !data?.cv) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-red-600">Kunne ikke indlæse CV</div>
-      </div>
-    );
-  }
 
   return (
     <div className="container mx-auto py-8 space-y-6">

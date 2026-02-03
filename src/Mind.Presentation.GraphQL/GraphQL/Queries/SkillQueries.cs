@@ -10,7 +10,7 @@ internal static class SkillQueries
 {
     public static void AddSkillQueries(this ObjectGraphType root)
     {
-        root.Field<ListGraphType<NonNullGraphType<SkillType>>>("skills")
+        root.Field<NonNullGraphType<ListGraphType<NonNullGraphType<SkillType>>>>("skills")
             .ResolveAsync(async context =>
             {
                 var services = context.RequestServices ?? throw new InvalidOperationException("RequestServices is not available.");

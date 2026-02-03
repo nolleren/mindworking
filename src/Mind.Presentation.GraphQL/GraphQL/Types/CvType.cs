@@ -12,11 +12,11 @@ public sealed class CvType : ObjectGraphType<Cv>
         Name = "Cv";
 
         Field(x => x.Id, type: typeof(NonNullGraphType<IdGraphType>));
-        Field(x => x.Name);
+        Field(x => x.Name, type: typeof(NonNullGraphType<StringGraphType>));
         Field(x => x.CreatedAt, type: typeof(NonNullGraphType<DateTimeGraphType>));
         Field(x => x.UpdatedAt, type: typeof(NonNullGraphType<DateTimeGraphType>));
 
-        Field<ListGraphType<NonNullGraphType<CompanyType>>>("companies")
+        Field<NonNullGraphType<ListGraphType<NonNullGraphType<CompanyType>>>>("companies")
             .Resolve(context =>
             {
                 var services = context.RequestServices ?? throw new InvalidOperationException("RequestServices is not available.");
@@ -25,7 +25,7 @@ public sealed class CvType : ObjectGraphType<Cv>
                     .LoadAsync(context.Source.Id);
             });
 
-        Field<ListGraphType<NonNullGraphType<ProjectType>>>("projects")
+        Field<NonNullGraphType<ListGraphType<NonNullGraphType<ProjectType>>>>("projects")
             .Resolve(context =>
             {
                 var services = context.RequestServices ?? throw new InvalidOperationException("RequestServices is not available.");
@@ -34,7 +34,7 @@ public sealed class CvType : ObjectGraphType<Cv>
                     .LoadAsync(context.Source.Id);
             });
 
-        Field<ListGraphType<NonNullGraphType<EducationType>>>("educations")
+        Field<NonNullGraphType<ListGraphType<NonNullGraphType<EducationType>>>>("educations")
             .Resolve(context =>
             {
                 var services = context.RequestServices ?? throw new InvalidOperationException("RequestServices is not available.");
@@ -43,7 +43,7 @@ public sealed class CvType : ObjectGraphType<Cv>
                     .LoadAsync(context.Source.Id);
             });
 
-        Field<ListGraphType<NonNullGraphType<SkillType>>>("skills")
+        Field<NonNullGraphType<ListGraphType<NonNullGraphType<SkillType>>>>("skills")
             .Resolve(context =>
             {
                 var services = context.RequestServices ?? throw new InvalidOperationException("RequestServices is not available.");

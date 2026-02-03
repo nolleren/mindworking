@@ -13,10 +13,10 @@ public sealed class CompanyType : ObjectGraphType<Company>
 
         Field(x => x.Id, type: typeof(NonNullGraphType<IdGraphType>));
         Field(x => x.Name);
-        Field(x => x.Address, nullable: true);
-        Field(x => x.ZipCode, nullable: true);
-        Field(x => x.City, nullable: true);
-        Field(x => x.Description, nullable: true);
+        Field(x => x.Address);
+        Field(x => x.ZipCode);
+        Field(x => x.City);
+        Field(x => x.Description);
         Field(x => x.CreatedAt, type: typeof(NonNullGraphType<DateTimeGraphType>));
         Field(x => x.UpdatedAt, type: typeof(NonNullGraphType<DateTimeGraphType>));
 

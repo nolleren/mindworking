@@ -10,7 +10,7 @@ internal static class ProjectQueries
 {
     public static void AddProjectQueries(this ObjectGraphType root)
     {
-        root.Field<ListGraphType<NonNullGraphType<ProjectType>>>("projects")
+        root.Field<NonNullGraphType<ListGraphType<NonNullGraphType<ProjectType>>>>("projects")
             .ResolveAsync(async context =>
             {
                 var services = context.RequestServices ?? throw new InvalidOperationException("RequestServices is not available.");

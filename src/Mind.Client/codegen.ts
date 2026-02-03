@@ -31,13 +31,13 @@ const config: CodegenConfig = {
           enumValues: 'upper-case#upperCase',
         },
         // Tilføj Maybe utility type
-        maybeValue: 'T | null | undefined',
+        // maybeValue: 'T | null | undefined',
         // Gør alle felter optional som default
-        avoidOptionals: {
-          field: false,
-          inputValue: false,
-          object: false,
-        },
+        // avoidOptionals: {
+        //   field: false,
+        //   inputValue: false,
+        //   object: false,
+        // },
         scalars: {
           DateTime: 'string',
           Date: 'string',

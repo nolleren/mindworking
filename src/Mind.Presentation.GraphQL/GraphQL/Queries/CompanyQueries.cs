@@ -10,7 +10,7 @@ internal static class CompanyQueries
 {
     public static void AddCompanyQueries(this ObjectGraphType root)
     {
-        root.Field<ListGraphType<NonNullGraphType<CompanyType>>>("companies")
+        root.Field<NonNullGraphType<ListGraphType<NonNullGraphType<CompanyType>>>>("companies")
             .ResolveAsync(async context =>
             {
                 var services = context.RequestServices ?? throw new InvalidOperationException("RequestServices is not available.");

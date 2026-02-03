@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client/react';
-export type Maybe<T> = T | null | undefined;
-export type InputMaybe<T> = T | null | undefined;
+export type Maybe<T> = T | null;
+export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
@@ -21,16 +21,16 @@ export type Scalars = {
 
 export type Company = {
   __typename?: 'Company';
-  address?: Maybe<Scalars['String']['output']>;
+  address: Scalars['String']['output'];
   canDelete: Scalars['Boolean']['output'];
-  city?: Maybe<Scalars['String']['output']>;
+  city: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
   cvs?: Maybe<Array<Cv>>;
-  description?: Maybe<Scalars['String']['output']>;
+  description: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
-  zipCode?: Maybe<Scalars['String']['output']>;
+  zipCode: Scalars['String']['output'];
 };
 
 export type CompanyCreateInput = {
@@ -51,37 +51,37 @@ export type CompanyUpsertInput = {
 };
 
 export type CreateCvInput = {
-  companies?: InputMaybe<Array<Scalars['ID']['input']>>;
-  educations?: InputMaybe<Array<Scalars['ID']['input']>>;
+  companies: Array<Scalars['ID']['input']>;
+  educations: Array<Scalars['ID']['input']>;
   name: Scalars['String']['input'];
-  projects?: InputMaybe<Array<Scalars['ID']['input']>>;
-  skills?: InputMaybe<Array<Scalars['ID']['input']>>;
+  projects: Array<Scalars['ID']['input']>;
+  skills: Array<Scalars['ID']['input']>;
 };
 
 export type Cv = {
   __typename?: 'Cv';
-  companies?: Maybe<Array<Company>>;
+  companies: Array<Company>;
   createdAt: Scalars['DateTime']['output'];
-  educations?: Maybe<Array<Education>>;
+  educations: Array<Education>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
-  projects?: Maybe<Array<Project>>;
-  skills?: Maybe<Array<Skill>>;
+  projects: Array<Project>;
+  skills: Array<Skill>;
   updatedAt: Scalars['DateTime']['output'];
 };
 
 export type Education = {
   __typename?: 'Education';
-  address?: Maybe<Scalars['String']['output']>;
+  address: Scalars['String']['output'];
   canDelete: Scalars['Boolean']['output'];
-  city?: Maybe<Scalars['String']['output']>;
+  city: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
   cvs?: Maybe<Array<Cv>>;
-  description?: Maybe<Scalars['String']['output']>;
+  description: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
-  zipCode?: Maybe<Scalars['String']['output']>;
+  zipCode: Scalars['String']['output'];
 };
 
 export type EducationCreateInput = {
@@ -185,7 +185,7 @@ export type Project = {
   canDelete: Scalars['Boolean']['output'];
   createdAt: Scalars['DateTime']['output'];
   cvs?: Maybe<Array<Cv>>;
-  description?: Maybe<Scalars['String']['output']>;
+  description: Scalars['String']['output'];
   endDate?: Maybe<Scalars['DateTime']['output']>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
@@ -210,16 +210,16 @@ export type ProjectUpsertInput = {
 
 export type Query = {
   __typename?: 'Query';
-  companies?: Maybe<Array<Company>>;
+  companies: Array<Company>;
   company?: Maybe<Company>;
   cv?: Maybe<Cv>;
   cvs?: Maybe<Array<Cv>>;
   education?: Maybe<Education>;
-  educations?: Maybe<Array<Education>>;
+  educations: Array<Education>;
   project?: Maybe<Project>;
-  projects?: Maybe<Array<Project>>;
+  projects: Array<Project>;
   skill?: Maybe<Skill>;
-  skills?: Maybe<Array<Skill>>;
+  skills: Array<Skill>;
 };
 
 export type QueryCompanyArgs = {
@@ -247,7 +247,7 @@ export type Skill = {
   canDelete: Scalars['Boolean']['output'];
   createdAt: Scalars['DateTime']['output'];
   cvs?: Maybe<Array<Cv>>;
-  description?: Maybe<Scalars['String']['output']>;
+  description: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   levelOfMastery: SkillMasteryLevel;
   name: Scalars['String']['output'];
@@ -274,35 +274,35 @@ export type SkillUpsertInput = {
 };
 
 export type UpdateCvInput = {
-  companies?: InputMaybe<Array<Scalars['ID']['input']>>;
-  educations?: InputMaybe<Array<Scalars['ID']['input']>>;
+  companies: Array<Scalars['ID']['input']>;
+  educations: Array<Scalars['ID']['input']>;
   id: Scalars['ID']['input'];
   name: Scalars['String']['input'];
-  projects?: InputMaybe<Array<Scalars['ID']['input']>>;
-  skills?: InputMaybe<Array<Scalars['ID']['input']>>;
+  projects: Array<Scalars['ID']['input']>;
+  skills: Array<Scalars['ID']['input']>;
 };
 
 export type GetCompaniesQueryVariables = Exact<{ [key: string]: never; }>;
 
-export type GetCompaniesQuery = { __typename?: 'Query', companies?: Array<{ __typename?: 'Company', id: string, name: string, address?: string | null | undefined, zipCode?: string | null | undefined, city?: string | null | undefined, description?: string | null | undefined, canDelete: boolean }> | null | undefined };
+export type GetCompaniesQuery = { __typename?: 'Query', companies: Array<{ __typename?: 'Company', id: string, name: string, address: string, zipCode: string, city: string, description: string, canDelete: boolean }> };
 
 export type GetCompanyQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
-export type GetCompanyQuery = { __typename?: 'Query', company?: { __typename?: 'Company', id: string, name: string, address?: string | null | undefined, zipCode?: string | null | undefined, city?: string | null | undefined, description?: string | null | undefined, canDelete: boolean } | null | undefined };
+export type GetCompanyQuery = { __typename?: 'Query', company?: { __typename?: 'Company', id: string, name: string, address: string, zipCode: string, city: string, description: string, canDelete: boolean } | null };
 
 export type CreateCompanyMutationVariables = Exact<{
   input: CompanyCreateInput;
 }>;
 
-export type CreateCompanyMutation = { __typename?: 'Mutation', createCompany: { __typename?: 'Company', id: string, name: string, address?: string | null | undefined, zipCode?: string | null | undefined, city?: string | null | undefined, description?: string | null | undefined, canDelete: boolean } };
+export type CreateCompanyMutation = { __typename?: 'Mutation', createCompany: { __typename?: 'Company', id: string, name: string, address: string, zipCode: string, city: string, description: string, canDelete: boolean } };
 
 export type UpdateCompanyMutationVariables = Exact<{
   input: CompanyUpsertInput;
 }>;
 
-export type UpdateCompanyMutation = { __typename?: 'Mutation', updateCompany: { __typename?: 'Company', id: string, name: string, address?: string | null | undefined, zipCode?: string | null | undefined, city?: string | null | undefined, description?: string | null | undefined, canDelete: boolean } };
+export type UpdateCompanyMutation = { __typename?: 'Mutation', updateCompany: { __typename?: 'Company', id: string, name: string, address: string, zipCode: string, city: string, description: string, canDelete: boolean } };
 
 export type DeleteCompanyMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -312,13 +312,13 @@ export type DeleteCompanyMutation = { __typename?: 'Mutation', deleteCompany: bo
 
 export type GetCvsQueryVariables = Exact<{ [key: string]: never; }>;
 
-export type GetCvsQuery = { __typename?: 'Query', cvs?: Array<{ __typename?: 'Cv', id: string, name: string, createdAt: string, updatedAt: string, companies?: Array<{ __typename?: 'Company', id: string, name: string }> | null | undefined, projects?: Array<{ __typename?: 'Project', id: string, name: string }> | null | undefined, educations?: Array<{ __typename?: 'Education', id: string, name: string }> | null | undefined, skills?: Array<{ __typename?: 'Skill', id: string, name: string }> | null | undefined }> | null | undefined };
+export type GetCvsQuery = { __typename?: 'Query', cvs?: Array<{ __typename?: 'Cv', id: string, name: string, createdAt: string, updatedAt: string, companies: Array<{ __typename?: 'Company', id: string, name: string }>, projects: Array<{ __typename?: 'Project', id: string, name: string }>, educations: Array<{ __typename?: 'Education', id: string, name: string }>, skills: Array<{ __typename?: 'Skill', id: string, name: string }> }> | null };
 
 export type GetCvQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
-export type GetCvQuery = { __typename?: 'Query', cv?: { __typename?: 'Cv', id: string, name: string, createdAt: string, updatedAt: string, companies?: Array<{ __typename?: 'Company', id: string, name: string, address?: string | null | undefined, zipCode?: string | null | undefined, city?: string | null | undefined, description?: string | null | undefined }> | null | undefined, projects?: Array<{ __typename?: 'Project', id: string, name: string, startDate?: string | null | undefined, endDate?: string | null | undefined, description?: string | null | undefined }> | null | undefined, educations?: Array<{ __typename?: 'Education', id: string, name: string, address?: string | null | undefined, zipCode?: string | null | undefined, city?: string | null | undefined, description?: string | null | undefined }> | null | undefined, skills?: Array<{ __typename?: 'Skill', id: string, name: string, description?: string | null | undefined, levelOfMastery: SkillMasteryLevel }> | null | undefined } | null | undefined };
+export type GetCvQuery = { __typename?: 'Query', cv?: { __typename?: 'Cv', id: string, name: string, createdAt: string, updatedAt: string, companies: Array<{ __typename?: 'Company', id: string, name: string, address: string, zipCode: string, city: string, description: string }>, projects: Array<{ __typename?: 'Project', id: string, name: string, startDate?: string | null, endDate?: string | null, description: string }>, educations: Array<{ __typename?: 'Education', id: string, name: string, address: string, zipCode: string, city: string, description: string }>, skills: Array<{ __typename?: 'Skill', id: string, name: string, description: string, levelOfMastery: SkillMasteryLevel }> } | null };
 
 export type CreateCvMutationVariables = Exact<{
   input: CreateCvInput;
@@ -340,25 +340,25 @@ export type DeleteCvMutation = { __typename?: 'Mutation', deleteCv: boolean };
 
 export type GetEducationsQueryVariables = Exact<{ [key: string]: never; }>;
 
-export type GetEducationsQuery = { __typename?: 'Query', educations?: Array<{ __typename?: 'Education', id: string, name: string, address?: string | null | undefined, zipCode?: string | null | undefined, city?: string | null | undefined, description?: string | null | undefined, canDelete: boolean }> | null | undefined };
+export type GetEducationsQuery = { __typename?: 'Query', educations: Array<{ __typename?: 'Education', id: string, name: string, address: string, zipCode: string, city: string, description: string, canDelete: boolean }> };
 
 export type GetEducationQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
-export type GetEducationQuery = { __typename?: 'Query', education?: { __typename?: 'Education', id: string, name: string, address?: string | null | undefined, zipCode?: string | null | undefined, city?: string | null | undefined, description?: string | null | undefined, canDelete: boolean } | null | undefined };
+export type GetEducationQuery = { __typename?: 'Query', education?: { __typename?: 'Education', id: string, name: string, address: string, zipCode: string, city: string, description: string, canDelete: boolean } | null };
 
 export type CreateEducationMutationVariables = Exact<{
   input: EducationCreateInput;
 }>;
 
-export type CreateEducationMutation = { __typename?: 'Mutation', createEducation: { __typename?: 'Education', id: string, name: string, address?: string | null | undefined, zipCode?: string | null | undefined, city?: string | null | undefined, description?: string | null | undefined, canDelete: boolean } };
+export type CreateEducationMutation = { __typename?: 'Mutation', createEducation: { __typename?: 'Education', id: string, name: string, address: string, zipCode: string, city: string, description: string, canDelete: boolean } };
 
 export type UpdateEducationMutationVariables = Exact<{
   input: EducationUpsertInput;
 }>;
 
-export type UpdateEducationMutation = { __typename?: 'Mutation', updateEducation: { __typename?: 'Education', id: string, name: string, address?: string | null | undefined, zipCode?: string | null | undefined, city?: string | null | undefined, description?: string | null | undefined, canDelete: boolean } };
+export type UpdateEducationMutation = { __typename?: 'Mutation', updateEducation: { __typename?: 'Education', id: string, name: string, address: string, zipCode: string, city: string, description: string, canDelete: boolean } };
 
 export type DeleteEducationMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -368,25 +368,25 @@ export type DeleteEducationMutation = { __typename?: 'Mutation', deleteEducation
 
 export type GetProjectsQueryVariables = Exact<{ [key: string]: never; }>;
 
-export type GetProjectsQuery = { __typename?: 'Query', projects?: Array<{ __typename?: 'Project', id: string, name: string, startDate?: string | null | undefined, endDate?: string | null | undefined, description?: string | null | undefined, canDelete: boolean }> | null | undefined };
+export type GetProjectsQuery = { __typename?: 'Query', projects: Array<{ __typename?: 'Project', id: string, name: string, startDate?: string | null, endDate?: string | null, description: string, canDelete: boolean }> };
 
 export type GetProjectQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
-export type GetProjectQuery = { __typename?: 'Query', project?: { __typename?: 'Project', id: string, name: string, startDate?: string | null | undefined, endDate?: string | null | undefined, description?: string | null | undefined, canDelete: boolean } | null | undefined };
+export type GetProjectQuery = { __typename?: 'Query', project?: { __typename?: 'Project', id: string, name: string, startDate?: string | null, endDate?: string | null, description: string, canDelete: boolean } | null };
 
 export type CreateProjectMutationVariables = Exact<{
   input: ProjectCreateInput;
 }>;
 
-export type CreateProjectMutation = { __typename?: 'Mutation', createProject: { __typename?: 'Project', id: string, name: string, startDate?: string | null | undefined, endDate?: string | null | undefined, description?: string | null | undefined, canDelete: boolean } };
+export type CreateProjectMutation = { __typename?: 'Mutation', createProject: { __typename?: 'Project', id: string, name: string, startDate?: string | null, endDate?: string | null, description: string, canDelete: boolean } };
 
 export type UpdateProjectMutationVariables = Exact<{
   input: ProjectUpsertInput;
 }>;
 
-export type UpdateProjectMutation = { __typename?: 'Mutation', updateProject: { __typename?: 'Project', id: string, name: string, startDate?: string | null | undefined, endDate?: string | null | undefined, description?: string | null | undefined, canDelete: boolean } };
+export type UpdateProjectMutation = { __typename?: 'Mutation', updateProject: { __typename?: 'Project', id: string, name: string, startDate?: string | null, endDate?: string | null, description: string, canDelete: boolean } };
 
 export type DeleteProjectMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -396,25 +396,25 @@ export type DeleteProjectMutation = { __typename?: 'Mutation', deleteProject: bo
 
 export type GetSkillsQueryVariables = Exact<{ [key: string]: never; }>;
 
-export type GetSkillsQuery = { __typename?: 'Query', skills?: Array<{ __typename?: 'Skill', id: string, name: string, description?: string | null | undefined, levelOfMastery: SkillMasteryLevel, canDelete: boolean }> | null | undefined };
+export type GetSkillsQuery = { __typename?: 'Query', skills: Array<{ __typename?: 'Skill', id: string, name: string, description: string, levelOfMastery: SkillMasteryLevel, canDelete: boolean }> };
 
 export type GetSkillQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
-export type GetSkillQuery = { __typename?: 'Query', skill?: { __typename?: 'Skill', id: string, name: string, description?: string | null | undefined, levelOfMastery: SkillMasteryLevel, canDelete: boolean } | null | undefined };
+export type GetSkillQuery = { __typename?: 'Query', skill?: { __typename?: 'Skill', id: string, name: string, description: string, levelOfMastery: SkillMasteryLevel, canDelete: boolean } | null };
 
 export type CreateSkillMutationVariables = Exact<{
   input: SkillCreateInput;
 }>;
 
-export type CreateSkillMutation = { __typename?: 'Mutation', createSkill: { __typename?: 'Skill', id: string, name: string, description?: string | null | undefined, levelOfMastery: SkillMasteryLevel, canDelete: boolean } };
+export type CreateSkillMutation = { __typename?: 'Mutation', createSkill: { __typename?: 'Skill', id: string, name: string, description: string, levelOfMastery: SkillMasteryLevel, canDelete: boolean } };
 
 export type UpdateSkillMutationVariables = Exact<{
   input: SkillUpsertInput;
 }>;
 
-export type UpdateSkillMutation = { __typename?: 'Mutation', updateSkill: { __typename?: 'Skill', id: string, name: string, description?: string | null | undefined, levelOfMastery: SkillMasteryLevel, canDelete: boolean } };
+export type UpdateSkillMutation = { __typename?: 'Mutation', updateSkill: { __typename?: 'Skill', id: string, name: string, description: string, levelOfMastery: SkillMasteryLevel, canDelete: boolean } };
 
 export type DeleteSkillMutationVariables = Exact<{
   id: Scalars['ID']['input'];
