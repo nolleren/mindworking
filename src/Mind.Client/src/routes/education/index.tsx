@@ -41,7 +41,12 @@ function EducationListPage() {
     try {
       if (editingEducation) {
         await updateEducation({
-          variables: { input: formData as EducationUpsertInput },
+          variables: {
+            input: {
+              ...(formData as EducationCreateInput),
+              id: editingEducation.id,
+            } as EducationUpsertInput,
+          },
           refetchQueries: ['GetEducations'],
         });
       } else {

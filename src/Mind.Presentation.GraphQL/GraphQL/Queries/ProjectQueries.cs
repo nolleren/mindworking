@@ -2,6 +2,7 @@
 using GraphQL.Types;
 using Mind.Presentation.GraphQL.Types;
 using Mind.Application.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Mind.Presentation.GraphQL.Queries;
 

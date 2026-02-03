@@ -7,8 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GraphQL" />
-    <PackageReference Include="GraphQL.DataLoader" />
+	  <PackageReference Include="GraphQL" />
+	  <PackageReference Include="GraphQL.DataLoader" />
+	  <PackageReference Include="GraphQL.MicrosoftDI" />
+	  <PackageReference Include="GraphQL.Server.Transports.AspNetCore" />
+	  <PackageReference Include="GraphQL.Server.Ui.GraphiQL" />
+	  <PackageReference Include="GraphQL.SystemTextJson" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
   </ItemGroup>
 

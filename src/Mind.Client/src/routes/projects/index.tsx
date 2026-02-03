@@ -41,7 +41,12 @@ function ProjectListPage() {
     try {
       if (editingProject) {
         await updateProject({
-          variables: { input: formData as ProjectUpsertInput },
+          variables: {
+            input: {
+              ...(formData as ProjectCreateInput),
+              id: editingProject.id,
+            } as ProjectUpsertInput,
+          },
           refetchQueries: ['GetProjects'],
         });
       } else {

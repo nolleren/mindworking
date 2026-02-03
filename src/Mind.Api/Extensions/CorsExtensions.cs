@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 
-namespace Mind.Api.Cors;
+namespace Mind.Api.Extensions;
 
 public static class CorsExtensions
 {

@@ -41,7 +41,12 @@ function CompanyListPage() {
     try {
       if (editingCompany) {
         await updateCompany({
-          variables: { input: formData as CompanyUpsertInput },
+          variables: {
+            input: {
+              ...(formData as CompanyCreateInput),
+              id: editingCompany.id,
+            } as CompanyUpsertInput,
+          },
           refetchQueries: ['GetCompanies'],
         });
       } else {

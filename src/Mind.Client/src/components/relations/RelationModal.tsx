@@ -52,7 +52,7 @@ function CompanyFormWrapper({
   });
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+    <form id="form-company" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
       <CompanyForm form={form} />
     </form>
   );
@@ -79,7 +79,7 @@ function EducationFormWrapper({
   });
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+    <form id="form-education" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
       <EducationForm form={form} />
     </form>
   );
@@ -105,7 +105,7 @@ function ProjectFormWrapper({
   });
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+    <form id="form-project" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
       <ProjectForm form={form} />
     </form>
   );
@@ -130,7 +130,7 @@ function SkillFormWrapper({
   });
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+    <form id="form-skill" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
       <SkillForm form={form} />
     </form>
   );
@@ -162,6 +162,17 @@ export function RelationModal({
   const handleFormSubmit = async (data: unknown) => {
     await onSubmit(data);
     handleClose();
+  };
+
+  const handleButtonSubmit = () => {
+    const form = document.querySelector(`form#form-${type}`) as HTMLFormElement | null;
+    if (form && typeof form.requestSubmit === 'function') {
+      form.requestSubmit();
+    } else if (form) {
+      // Fallback for browsers that don't support requestSubmit
+      const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+      form.dispatchEvent(submitEvent);
+    }
   };
 
   const handleSelectSubmit = async () => {
@@ -256,16 +267,7 @@ export function RelationModal({
               Tilføj valgte ({selectedIds.length})
             </Button>
           ) : (
-            <Button
-              type="submit"
-              form={`form-${type}`}
-              onClick={() => {
-                const form = document.getElementById(`form-${type}`) as HTMLFormElement;
-                if (form) form.requestSubmit();
-              }}
-            >
-              {mode === 'edit' ? 'Gem' : 'Opret'}
-            </Button>
+            <Button onClick={handleButtonSubmit}>{mode === 'edit' ? 'Gem' : 'Opret'}</Button>
           )}
         </div>
       }

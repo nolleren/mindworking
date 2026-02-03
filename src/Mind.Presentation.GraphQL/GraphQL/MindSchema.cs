@@ -1,4 +1,5 @@
 ﻿using GraphQL.Types;
+using Microsoft.Extensions.DependencyInjection;
 using Mind.Presentation.GraphQL.Mutations;
 using Mind.Presentation.GraphQL.Queries;
 

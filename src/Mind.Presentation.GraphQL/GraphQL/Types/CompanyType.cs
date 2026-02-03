@@ -1,7 +1,7 @@
-﻿using GraphQL.DataLoader;
-using GraphQL.Types;
+﻿using GraphQL.Types;
 using Mind.Presentation.GraphQL.DataLoaders;
 using Mind.Core.Entities;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Mind.Presentation.GraphQL.Types;
 

@@ -4,6 +4,7 @@ using Mind.Presentation.GraphQL.Inputs;
 using Mind.Presentation.GraphQL.Types;
 using Mind.Application.Inputs;
 using Mind.Application.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Mind.Presentation.GraphQL.Mutations;
 

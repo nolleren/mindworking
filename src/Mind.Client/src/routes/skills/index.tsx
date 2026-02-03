@@ -41,7 +41,9 @@ function SkillListPage() {
     try {
       if (editingSkill) {
         await updateSkill({
-          variables: { input: formData as SkillUpsertInput },
+          variables: {
+            input: { ...(formData as SkillCreateInput), id: editingSkill.id } as SkillUpsertInput,
+          },
           refetchQueries: ['GetSkills'],
         });
       } else {
@@ -110,6 +112,16 @@ function SkillListPage() {
 
   const skills = data?.skills || [];
 
+  const getLevelLabel = (level: string) => {
+    const labels: Record<string, string> = {
+      BASIS: 'Basis',
+      MEDIUM: 'Medium',
+      STRONG: 'Stærk',
+      EVANGELIST: 'Evangelist',
+    };
+    return labels[level] || level;
+  };
+
   const columns = [
     {
       header: 'Navn',
@@ -117,7 +129,7 @@ function SkillListPage() {
     },
     {
       header: 'Niveau',
-      accessor: 'levelOfMastery' as keyof Skill,
+      accessor: (skill: Skill) => getLevelLabel(skill.levelOfMastery),
       className: 'whitespace-nowrap',
     },
     {
@@ -132,7 +144,7 @@ function SkillListPage() {
     {
       header: 'Handlinger',
       accessor: (skill: Skill) => (
-        <div className="flex gap-2">
+        <div className="flex gap-2 justify-end">
           <Button
             size="sm"
             variant="secondary"
@@ -170,6 +182,7 @@ function SkillListPage() {
           </span>
         </div>
       ),
+      className: 'w-px whitespace-nowrap text-right',
     },
   ];
 
