@@ -5,22 +5,14 @@ import { educationSchema, type EducationFormData } from '../../../schemas/educat
 import type { Education } from '../../../graphql/generated/types';
 
 interface EducationRelationModalProps {
-  entity?: Education;
+  entity: Education;
   onSubmit: (data: EducationFormData) => Promise<void>;
 }
 
 export function EducationRelationModal({ entity, onSubmit }: EducationRelationModalProps) {
   const form = useForm<EducationFormData>({
     resolver: yupResolver(educationSchema),
-    defaultValues: entity
-      ? {
-          name: entity.name,
-          address: entity.address ?? '',
-          zipCode: entity.zipCode ?? '',
-          city: entity.city ?? '',
-          description: entity.description ?? '',
-        }
-      : undefined,
+    defaultValues: entity,
   });
 
   return (

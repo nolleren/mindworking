@@ -29,7 +29,7 @@ function RootLayout() {
               Virksomheder
             </Link>
             <Link
-              to="/education"
+              to="/educations"
               className="text-white/90 hover:text-white"
               activeProps={{ className: 'text-white underline underline-offset-4' }}
             >

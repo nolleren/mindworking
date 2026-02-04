@@ -10,21 +10,19 @@ function normalizeDateInput(value?: string | null) {
 }
 
 interface ProjectRelationModalProps {
-  entity?: Project;
+  entity: Project;
   onSubmit: (data: ProjectFormData) => Promise<void>;
 }
 
 export function ProjectRelationModal({ entity, onSubmit }: ProjectRelationModalProps) {
   const form = useForm<ProjectFormData>({
     resolver: yupResolver(projectSchema),
-    defaultValues: entity
-      ? {
-          name: entity.name,
-          startDate: normalizeDateInput(entity.startDate),
-          endDate: normalizeDateInput(entity.endDate),
-          description: entity.description ?? '',
-        }
-      : undefined,
+    defaultValues: {
+      name: entity.name,
+      startDate: normalizeDateInput(entity.startDate),
+      endDate: normalizeDateInput(entity.endDate),
+      description: entity.description,
+    },
   });
 
   return (

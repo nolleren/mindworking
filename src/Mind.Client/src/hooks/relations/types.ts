@@ -16,13 +16,21 @@ import type {
   Education,
   Project,
   Skill,
+  GetEducationsQuery,
+  GetCompaniesQuery,
+  GetProjectsQuery,
+  GetSkillsQuery,
 } from '../../graphql/generated/types';
 
 export type ModalMode = 'create' | 'edit';
 
 export type RelationType = 'company' | 'education' | 'project' | 'skill';
 
-export type RelationEntity = CompanyEntity | EducationEntity | ProjectEntity | SkillEntity;
+export type RelationEntity =
+  | CompanyListItemEntity
+  | EducationListItemEntity
+  | ProjectListItemEntity
+  | SkillListItemEntity;
 
 export type CreateInputMap = {
   company: CompanyCreateInput;
@@ -78,17 +86,28 @@ export type FormRelationType =
   | ProjectFormData
   | SkillFormData;
 
+export type CompanyListItemEntity = NonNullable<GetCompaniesQuery['companies']>[number];
+export type EducationListItemEntity = NonNullable<GetEducationsQuery['educations']>[number];
+export type ProjectListItemEntity = NonNullable<GetProjectsQuery['projects']>[number];
+export type SkillListItemEntity = NonNullable<GetSkillsQuery['skills']>[number];
+
 export type cvEntity = GetCvQuery['cv'];
-export type CompanyEntity = NonNullable<
-  NonNullable<Required<GetCvQuery>['cv']>['companies']
->[number];
-export type EducationEntity = NonNullable<
-  NonNullable<Required<GetCvQuery>['cv']>['educations']
->[number];
-export type ProjectEntity = NonNullable<
-  NonNullable<Required<GetCvQuery>['cv']>['projects']
->[number];
-export type SkillEntity = NonNullable<NonNullable<Required<GetCvQuery>['cv']>['skills']>[number];
+export type CompanyEntity =
+  | NonNullable<NonNullable<Required<GetCvQuery>['cv']>['companies']>[number]
+  | CompanyUpsertInput
+  | CompanyCreateInput;
+export type EducationEntity =
+  | NonNullable<NonNullable<Required<GetCvQuery>['cv']>['educations']>[number]
+  | EducationUpsertInput
+  | EducationCreateInput;
+export type ProjectEntity =
+  | NonNullable<NonNullable<Required<GetCvQuery>['cv']>['projects']>[number]
+  | ProjectUpsertInput
+  | ProjectCreateInput;
+export type SkillEntity =
+  | NonNullable<NonNullable<Required<GetCvQuery>['cv']>['skills']>[number]
+  | SkillUpsertInput
+  | SkillCreateInput;
 
 // Helper types for CV relations that only need ID
 export type CompanyRelationInput = Pick<CompanyUpsertInput, 'id'> &

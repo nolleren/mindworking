@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Dialog } from '../ui/Dialog';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
-import type { RelationType, RelationEntity } from '../../hooks/relations/types';
+import type { RelationType, RelationEntity, FormRelationType } from '../../hooks/relations/types';
 import type { Company, Education, Project, Skill } from '../../graphql/generated/types';
 import { CompanyRelationModal } from './modals/CompanyRelationModal';
 import { EducationRelationModal } from './modals/EducationRelationModal';
@@ -16,7 +16,7 @@ interface RelationModalProps {
   mode: 'create' | 'edit' | 'select';
   entity?: RelationEntity;
   availableEntities?: RelationEntity[];
-  onSubmit: (data: object) => Promise<void>;
+  onSubmit: (data: FormRelationType) => Promise<void>;
   onSelect?: (entityIds: string[]) => Promise<void>;
   openCreate?: () => void;
 }
@@ -45,7 +45,7 @@ export function RelationModal({
     onClose();
   };
 
-  const handleFormSubmit = async (data: object) => {
+  const handleFormSubmit = async (data: FormRelationType) => {
     await onSubmit(data);
     handleClose();
   };
@@ -85,7 +85,6 @@ export function RelationModal({
     return name.includes(searchLower);
   });
 
-  // Get title based on type and mode
   const getTitle = () => {
     const typeLabels: Record<RelationType, string> = {
       company: 'virksomhed',
@@ -104,34 +103,16 @@ export function RelationModal({
   const renderForm = () => {
     switch (type) {
       case 'company':
-        return (
-          <CompanyRelationModal
-            entity={entity as Company | undefined}
-            onSubmit={handleFormSubmit}
-          />
-        );
+        return <CompanyRelationModal entity={entity as Company} onSubmit={handleFormSubmit} />;
       case 'education':
-        return (
-          <EducationRelationModal
-            entity={entity as Education | undefined}
-            onSubmit={handleFormSubmit}
-          />
-        );
+        return <EducationRelationModal entity={entity as Education} onSubmit={handleFormSubmit} />;
       case 'project':
-        return (
-          <ProjectRelationModal
-            entity={entity as Project | undefined}
-            onSubmit={handleFormSubmit}
-          />
-        );
+        return <ProjectRelationModal entity={entity as Project} onSubmit={handleFormSubmit} />;
       case 'skill':
-        return (
-          <SkillRelationModal entity={entity as Skill | undefined} onSubmit={handleFormSubmit} />
-        );
+        return <SkillRelationModal entity={entity as Skill} onSubmit={handleFormSubmit} />;
     }
   };
 
-  // Render entity name for list
   const getEntityDisplayName = (entity: RelationEntity) => {
     if (type === 'company' || type === 'education') {
       const e = entity as Company | Education;

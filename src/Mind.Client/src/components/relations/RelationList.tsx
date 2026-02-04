@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '../ui/Button';
 import { RelationItem } from './RelationItem';
 import { RelationModal } from './RelationModal';
-import type { RelationEntity, RelationType } from '../../hooks/relations/types';
+import type { FormRelationType, RelationEntity, RelationType } from '../../hooks/relations/types';
 
 interface RelationListProps {
   type: RelationType;
@@ -10,7 +10,7 @@ interface RelationListProps {
   availableEntities: RelationEntity[];
   onAdd: (entityIds: string[]) => Promise<void>;
   onCreate: (data: object) => Promise<void>;
-  onEdit: (entity: RelationEntity, data: object) => Promise<void>;
+  onEdit: (entity: RelationEntity, data: RelationEntity) => Promise<void>;
   onDelete: (entityId: string) => Promise<void>;
 }
 
@@ -48,10 +48,10 @@ export function RelationList({
     setModalOpen(true);
   };
 
-  const handleModalSubmit = async (data: object) => {
+  const handleModalSubmit = async (data: FormRelationType) => {
     if (modalMode === 'edit' && editingEntity && editingEntity.id) {
-      const editData = { ...(data as Record<string, unknown>), id: editingEntity.id };
-      await onEdit(editingEntity, editData);
+      const editData = { ...data, id: editingEntity.id };
+      await onEdit(editingEntity, editData as RelationEntity);
     } else if (modalMode === 'create') {
       await onCreate(data);
     }

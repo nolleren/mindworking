@@ -12,20 +12,12 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SkillsIndexRouteImport } from './routes/skills/index'
 import { Route as ProjectsIndexRouteImport } from './routes/projects/index'
-import { Route as EducationIndexRouteImport } from './routes/education/index'
+import { Route as EducationsIndexRouteImport } from './routes/educations/index'
 import { Route as CvsIndexRouteImport } from './routes/cvs/index'
 import { Route as CompaniesIndexRouteImport } from './routes/companies/index'
-import { Route as SkillsCreateRouteImport } from './routes/skills/create'
-import { Route as ProjectsCreateRouteImport } from './routes/projects/create'
-import { Route as EducationCreateRouteImport } from './routes/education/create'
 import { Route as CvsCreateRouteImport } from './routes/cvs/create'
 import { Route as CvsIdRouteImport } from './routes/cvs/$id'
-import { Route as CompaniesCreateRouteImport } from './routes/companies/create'
-import { Route as SkillsIdEditRouteImport } from './routes/skills/$id.edit'
-import { Route as ProjectsIdEditRouteImport } from './routes/projects/$id.edit'
-import { Route as EducationIdEditRouteImport } from './routes/education/$id.edit'
 import { Route as CvsIdEditRouteImport } from './routes/cvs/$id_.edit'
-import { Route as CompaniesIdEditRouteImport } from './routes/companies/$id.edit'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -42,9 +34,9 @@ const ProjectsIndexRoute = ProjectsIndexRouteImport.update({
   path: '/projects/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const EducationIndexRoute = EducationIndexRouteImport.update({
-  id: '/education/',
-  path: '/education/',
+const EducationsIndexRoute = EducationsIndexRouteImport.update({
+  id: '/educations/',
+  path: '/educations/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CvsIndexRoute = CvsIndexRouteImport.update({
@@ -57,21 +49,6 @@ const CompaniesIndexRoute = CompaniesIndexRouteImport.update({
   path: '/companies/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SkillsCreateRoute = SkillsCreateRouteImport.update({
-  id: '/skills/create',
-  path: '/skills/create',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProjectsCreateRoute = ProjectsCreateRouteImport.update({
-  id: '/projects/create',
-  path: '/projects/create',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EducationCreateRoute = EducationCreateRouteImport.update({
-  id: '/education/create',
-  path: '/education/create',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const CvsCreateRoute = CvsCreateRouteImport.update({
   id: '/cvs/create',
   path: '/cvs/create',
@@ -82,173 +59,92 @@ const CvsIdRoute = CvsIdRouteImport.update({
   path: '/cvs/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CompaniesCreateRoute = CompaniesCreateRouteImport.update({
-  id: '/companies/create',
-  path: '/companies/create',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SkillsIdEditRoute = SkillsIdEditRouteImport.update({
-  id: '/skills/$id/edit',
-  path: '/skills/$id/edit',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProjectsIdEditRoute = ProjectsIdEditRouteImport.update({
-  id: '/projects/$id/edit',
-  path: '/projects/$id/edit',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EducationIdEditRoute = EducationIdEditRouteImport.update({
-  id: '/education/$id/edit',
-  path: '/education/$id/edit',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const CvsIdEditRoute = CvsIdEditRouteImport.update({
   id: '/cvs/$id_/edit',
   path: '/cvs/$id/edit',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CompaniesIdEditRoute = CompaniesIdEditRouteImport.update({
-  id: '/companies/$id/edit',
-  path: '/companies/$id/edit',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/companies/create': typeof CompaniesCreateRoute
   '/cvs/$id': typeof CvsIdRoute
   '/cvs/create': typeof CvsCreateRoute
-  '/education/create': typeof EducationCreateRoute
-  '/projects/create': typeof ProjectsCreateRoute
-  '/skills/create': typeof SkillsCreateRoute
   '/companies/': typeof CompaniesIndexRoute
   '/cvs/': typeof CvsIndexRoute
-  '/education/': typeof EducationIndexRoute
+  '/educations/': typeof EducationsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
   '/skills/': typeof SkillsIndexRoute
-  '/companies/$id/edit': typeof CompaniesIdEditRoute
   '/cvs/$id/edit': typeof CvsIdEditRoute
-  '/education/$id/edit': typeof EducationIdEditRoute
-  '/projects/$id/edit': typeof ProjectsIdEditRoute
-  '/skills/$id/edit': typeof SkillsIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/companies/create': typeof CompaniesCreateRoute
   '/cvs/$id': typeof CvsIdRoute
   '/cvs/create': typeof CvsCreateRoute
-  '/education/create': typeof EducationCreateRoute
-  '/projects/create': typeof ProjectsCreateRoute
-  '/skills/create': typeof SkillsCreateRoute
   '/companies': typeof CompaniesIndexRoute
   '/cvs': typeof CvsIndexRoute
-  '/education': typeof EducationIndexRoute
+  '/educations': typeof EducationsIndexRoute
   '/projects': typeof ProjectsIndexRoute
   '/skills': typeof SkillsIndexRoute
-  '/companies/$id/edit': typeof CompaniesIdEditRoute
   '/cvs/$id/edit': typeof CvsIdEditRoute
-  '/education/$id/edit': typeof EducationIdEditRoute
-  '/projects/$id/edit': typeof ProjectsIdEditRoute
-  '/skills/$id/edit': typeof SkillsIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/companies/create': typeof CompaniesCreateRoute
   '/cvs/$id': typeof CvsIdRoute
   '/cvs/create': typeof CvsCreateRoute
-  '/education/create': typeof EducationCreateRoute
-  '/projects/create': typeof ProjectsCreateRoute
-  '/skills/create': typeof SkillsCreateRoute
   '/companies/': typeof CompaniesIndexRoute
   '/cvs/': typeof CvsIndexRoute
-  '/education/': typeof EducationIndexRoute
+  '/educations/': typeof EducationsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
   '/skills/': typeof SkillsIndexRoute
-  '/companies/$id/edit': typeof CompaniesIdEditRoute
   '/cvs/$id_/edit': typeof CvsIdEditRoute
-  '/education/$id/edit': typeof EducationIdEditRoute
-  '/projects/$id/edit': typeof ProjectsIdEditRoute
-  '/skills/$id/edit': typeof SkillsIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/companies/create'
     | '/cvs/$id'
     | '/cvs/create'
-    | '/education/create'
-    | '/projects/create'
-    | '/skills/create'
     | '/companies/'
     | '/cvs/'
-    | '/education/'
+    | '/educations/'
     | '/projects/'
     | '/skills/'
-    | '/companies/$id/edit'
     | '/cvs/$id/edit'
-    | '/education/$id/edit'
-    | '/projects/$id/edit'
-    | '/skills/$id/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/companies/create'
     | '/cvs/$id'
     | '/cvs/create'
-    | '/education/create'
-    | '/projects/create'
-    | '/skills/create'
     | '/companies'
     | '/cvs'
-    | '/education'
+    | '/educations'
     | '/projects'
     | '/skills'
-    | '/companies/$id/edit'
     | '/cvs/$id/edit'
-    | '/education/$id/edit'
-    | '/projects/$id/edit'
-    | '/skills/$id/edit'
   id:
     | '__root__'
     | '/'
-    | '/companies/create'
     | '/cvs/$id'
     | '/cvs/create'
-    | '/education/create'
-    | '/projects/create'
-    | '/skills/create'
     | '/companies/'
     | '/cvs/'
-    | '/education/'
+    | '/educations/'
     | '/projects/'
     | '/skills/'
-    | '/companies/$id/edit'
     | '/cvs/$id_/edit'
-    | '/education/$id/edit'
-    | '/projects/$id/edit'
-    | '/skills/$id/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CompaniesCreateRoute: typeof CompaniesCreateRoute
   CvsIdRoute: typeof CvsIdRoute
   CvsCreateRoute: typeof CvsCreateRoute
-  EducationCreateRoute: typeof EducationCreateRoute
-  ProjectsCreateRoute: typeof ProjectsCreateRoute
-  SkillsCreateRoute: typeof SkillsCreateRoute
   CompaniesIndexRoute: typeof CompaniesIndexRoute
   CvsIndexRoute: typeof CvsIndexRoute
-  EducationIndexRoute: typeof EducationIndexRoute
+  EducationsIndexRoute: typeof EducationsIndexRoute
   ProjectsIndexRoute: typeof ProjectsIndexRoute
   SkillsIndexRoute: typeof SkillsIndexRoute
-  CompaniesIdEditRoute: typeof CompaniesIdEditRoute
   CvsIdEditRoute: typeof CvsIdEditRoute
-  EducationIdEditRoute: typeof EducationIdEditRoute
-  ProjectsIdEditRoute: typeof ProjectsIdEditRoute
-  SkillsIdEditRoute: typeof SkillsIdEditRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -274,11 +170,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/education/': {
-      id: '/education/'
-      path: '/education'
-      fullPath: '/education/'
-      preLoaderRoute: typeof EducationIndexRouteImport
+    '/educations/': {
+      id: '/educations/'
+      path: '/educations'
+      fullPath: '/educations/'
+      preLoaderRoute: typeof EducationsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cvs/': {
@@ -295,27 +191,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompaniesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/skills/create': {
-      id: '/skills/create'
-      path: '/skills/create'
-      fullPath: '/skills/create'
-      preLoaderRoute: typeof SkillsCreateRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/projects/create': {
-      id: '/projects/create'
-      path: '/projects/create'
-      fullPath: '/projects/create'
-      preLoaderRoute: typeof ProjectsCreateRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/education/create': {
-      id: '/education/create'
-      path: '/education/create'
-      fullPath: '/education/create'
-      preLoaderRoute: typeof EducationCreateRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/cvs/create': {
       id: '/cvs/create'
       path: '/cvs/create'
@@ -330,34 +205,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CvsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/companies/create': {
-      id: '/companies/create'
-      path: '/companies/create'
-      fullPath: '/companies/create'
-      preLoaderRoute: typeof CompaniesCreateRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/skills/$id/edit': {
-      id: '/skills/$id/edit'
-      path: '/skills/$id/edit'
-      fullPath: '/skills/$id/edit'
-      preLoaderRoute: typeof SkillsIdEditRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/projects/$id/edit': {
-      id: '/projects/$id/edit'
-      path: '/projects/$id/edit'
-      fullPath: '/projects/$id/edit'
-      preLoaderRoute: typeof ProjectsIdEditRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/education/$id/edit': {
-      id: '/education/$id/edit'
-      path: '/education/$id/edit'
-      fullPath: '/education/$id/edit'
-      preLoaderRoute: typeof EducationIdEditRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/cvs/$id_/edit': {
       id: '/cvs/$id_/edit'
       path: '/cvs/$id/edit'
@@ -365,34 +212,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CvsIdEditRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/companies/$id/edit': {
-      id: '/companies/$id/edit'
-      path: '/companies/$id/edit'
-      fullPath: '/companies/$id/edit'
-      preLoaderRoute: typeof CompaniesIdEditRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CompaniesCreateRoute: CompaniesCreateRoute,
   CvsIdRoute: CvsIdRoute,
   CvsCreateRoute: CvsCreateRoute,
-  EducationCreateRoute: EducationCreateRoute,
-  ProjectsCreateRoute: ProjectsCreateRoute,
-  SkillsCreateRoute: SkillsCreateRoute,
   CompaniesIndexRoute: CompaniesIndexRoute,
   CvsIndexRoute: CvsIndexRoute,
-  EducationIndexRoute: EducationIndexRoute,
+  EducationsIndexRoute: EducationsIndexRoute,
   ProjectsIndexRoute: ProjectsIndexRoute,
   SkillsIndexRoute: SkillsIndexRoute,
-  CompaniesIdEditRoute: CompaniesIdEditRoute,
   CvsIdEditRoute: CvsIdEditRoute,
-  EducationIdEditRoute: EducationIdEditRoute,
-  ProjectsIdEditRoute: ProjectsIdEditRoute,
-  SkillsIdEditRoute: SkillsIdEditRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,49 +1,55 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { useState } from 'react';
 import {
-  useGetEducationsQuery,
   useDeleteEducationMutation,
   useCreateEducationMutation,
   useUpdateEducationMutation,
-  type Education,
   type EducationCreateInput,
   type EducationUpsertInput,
-} from '../../graphql/generated/types';
-import { Table } from '../../components/ui/Table';
-import { Button } from '../../components/ui/Button';
-import { Card } from '../../components/ui/Card';
-import { RelationModal } from '../../components/relations/RelationModal';
+  GetEducationsQuery,
+  UpdateEducationMutationVariables,
+} from '../../../graphql/generated/types';
+import { useState } from 'react';
+import { Table } from '../../ui/Table';
+import { Button } from '../../ui/Button';
+import { Card } from '../../ui/Card';
+import { RelationModal } from '../../relations/RelationModal';
 
-export const Route = createFileRoute('/education/')({
-  component: EducationListPage,
-});
+interface EducationListPageProps {
+  educations: GetEducationsQuery['educations'];
+}
 
-function EducationListPage() {
-  const { data, loading, error } = useGetEducationsQuery();
+type Education = GetEducationsQuery['educations'][number];
+
+export type EducationEditCreate =
+  | (NonNullable<UpdateEducationMutationVariables['input']> & { id: string })
+  | NonNullable<UpdateEducationMutationVariables['input']>;
+
+export function EducationListPage({ educations }: EducationListPageProps) {
   const [deleteEducation] = useDeleteEducationMutation();
   const [createEducation] = useCreateEducationMutation();
   const [updateEducation] = useUpdateEducationMutation();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingEducation, setEditingEducation] = useState<Education | null>(null);
+  const [editingEducation, setEditingEducation] = useState<
+    GetEducationsQuery['educations'][number] | null
+  >(null);
 
   const handleCreate = () => {
     setEditingEducation(null);
     setIsModalOpen(true);
   };
 
-  const handleEdit = (education: Education) => {
+  const handleEdit = (education: GetEducationsQuery['educations'][number]) => {
     setEditingEducation(education);
     setIsModalOpen(true);
   };
 
-  const handleSubmit = async (formData: unknown) => {
+  const handleSubmit = async (formData: EducationEditCreate) => {
     try {
       if (editingEducation) {
         await updateEducation({
           variables: {
             input: {
-              ...(formData as EducationCreateInput),
+              ...(formData as EducationEditCreate),
               id: editingEducation.id,
             } as EducationUpsertInput,
           },
@@ -79,12 +85,10 @@ function EducationListPage() {
                   if (!Array.isArray(existingRefs)) {
                     return existingRefs;
                   }
-
                   return existingRefs.filter((ref) => readField('id', ref) !== id);
                 },
               },
             });
-
             const cacheId = cache.identify({ __typename: 'Education', id });
             if (cacheId) {
               cache.evict({ id: cacheId });
@@ -101,20 +105,6 @@ function EducationListPage() {
     }
   };
 
-  if (loading && !data) {
-    return <div className="flex justify-center items-center h-64">Indlæser...</div>;
-  }
-
-  if (error) {
-    return (
-      <div className="text-red-600 text-center p-4">
-        Fejl ved indlæsning af uddannelser: {error.message}
-      </div>
-    );
-  }
-
-  const educations = data?.educations || [];
-
   const columns = [
     {
       header: 'Navn',
@@ -122,12 +112,12 @@ function EducationListPage() {
     },
     {
       header: 'Adresse',
-      accessor: (education: Education) => education.address ?? '',
+      accessor: (education: Education) => education.address,
       className: 'whitespace-nowrap',
     },
     {
       header: 'Postnr',
-      accessor: (education: Education) => education.zipCode ?? '',
+      accessor: (education: Education) => education.zipCode,
       className: 'whitespace-nowrap',
     },
     {
@@ -138,8 +128,8 @@ function EducationListPage() {
     {
       header: 'Beskrivelse',
       accessor: (education: Education) => (
-        <span className="block max-w-md truncate" title={education.description ?? ''}>
-          {education.description ?? ''}
+        <span className="block max-w-md truncate" title={education.description}>
+          {education.description}
         </span>
       ),
       className: 'max-w-md',

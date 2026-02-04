@@ -31,7 +31,7 @@ function HomePage() {
           </Link>
 
           <Link
-            to="/education"
+            to="/educations"
             className="block p-6 bg-white rounded-lg shadow hover:shadow-lg transition-shadow"
           >
             <h3 className="text-xl font-semibold text-primary-600 mb-2">Uddannelser</h3>
