@@ -4,21 +4,13 @@ import { RelationItem } from './RelationItem';
 import { RelationModal } from './RelationModal';
 import type { RelationEntity, RelationType } from '../../hooks/relations/types';
 
-import type { GetCvQuery } from '../../graphql/generated/types';
-
-type EntityType =
-  | NonNullable<NonNullable<Required<GetCvQuery>['cv']>['companies']>[number]
-  | NonNullable<NonNullable<Required<GetCvQuery>['cv']>['educations']>[number]
-  | NonNullable<NonNullable<Required<GetCvQuery>['cv']>['projects']>[number]
-  | NonNullable<NonNullable<Required<GetCvQuery>['cv']>['skills']>[number];
-
 interface RelationListProps {
   type: RelationType;
-  entities: EntityType[];
-  availableEntities: EntityType[];
+  entities: RelationEntity[];
+  availableEntities: RelationEntity[];
   onAdd: (entityIds: string[]) => Promise<void>;
-  onCreate: (data: unknown) => Promise<void>;
-  onEdit: (entity: EntityType, data: unknown) => Promise<void>;
+  onCreate: (data: object) => Promise<void>;
+  onEdit: (entity: RelationEntity, data: object) => Promise<void>;
   onDelete: (entityId: string) => Promise<void>;
 }
 
@@ -56,7 +48,7 @@ export function RelationList({
     setModalOpen(true);
   };
 
-  const handleModalSubmit = async (data: unknown) => {
+  const handleModalSubmit = async (data: object) => {
     if (modalMode === 'edit' && editingEntity && editingEntity.id) {
       const editData = { ...(data as Record<string, unknown>), id: editingEntity.id };
       await onEdit(editingEntity, editData);
@@ -121,7 +113,6 @@ export function RelationList({
         availableEntities={availableEntities}
         onSubmit={handleModalSubmit}
         onSelect={handleModalSelect}
-        // Injecter en prop til at åbne 'create' mode fra modal
         openCreate={handleOpenCreate}
       />
     </div>

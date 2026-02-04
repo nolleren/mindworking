@@ -1,7 +1,17 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createRelationHandlers } from '../../hooks/relations/useGenericRelationHandlers';
+import type {
+  CompanyEntity,
+  CreateInputMap,
+  EducationEntity,
+  ProjectEntity,
+  RelationEntity,
+  SkillEntity,
+  UpdateInputMap,
+} from '../../hooks/relations/types';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import {
   useGetCompaniesQuery,
   useGetCvQuery,
@@ -9,18 +19,6 @@ import {
   useGetProjectsQuery,
   useGetSkillsQuery,
   useUpdateCvMutation,
-  type Company,
-  type Education,
-  type Project,
-  type Skill,
-  type CompanyCreateInput,
-  type EducationCreateInput,
-  type ProjectCreateInput,
-  type SkillCreateInput,
-  type CompanyUpsertInput,
-  type EducationUpsertInput,
-  type ProjectUpsertInput,
-  type SkillUpsertInput,
   type UpdateCvInput,
   GetCvQuery,
   GetCompaniesQuery,
@@ -33,7 +31,7 @@ import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { RelationList } from '../../components/relations/RelationList';
-import { useRelationCrud, type RelationEntity } from '../../hooks/relations/useRelationCrud';
+import { useRelationCrud } from '../../hooks/relations/useRelationCrud';
 
 export const Route = createFileRoute('/cvs/$id_/edit')({
   component: EditCvPageContainer,
@@ -99,11 +97,6 @@ function EditCvPage({
   navigate,
   id,
 }: EditCvPageProps) {
-  type CompanyEntity = NonNullable<NonNullable<Required<GetCvQuery>['cv']>['companies']>[number];
-  type EducationEntity = NonNullable<NonNullable<Required<GetCvQuery>['cv']>['educations']>[number];
-  type ProjectEntity = NonNullable<NonNullable<Required<GetCvQuery>['cv']>['projects']>[number];
-  type SkillEntity = NonNullable<NonNullable<Required<GetCvQuery>['cv']>['skills']>[number];
-
   // Local state for relations during editing
   const [selectedCompanies, setSelectedCompanies] = useState<CompanyEntity[]>(cv?.companies ?? []);
   const [selectedEducations, setSelectedEducations] = useState<EducationEntity[]>(
@@ -168,89 +161,43 @@ function EditCvPage({
     }
   });
 
-  // Company handlers
-  const handleAddCompanies = async (companyIds: string[]) => {
-    const newCompanies = companies.filter((c) => companyIds.includes(c.id));
-    setSelectedCompanies((prev) => [...prev, ...newCompanies]);
-  };
-
-  const handleCreateCompany = async (data: unknown) => {
-    const created = await createEntity('company', data as CompanyCreateInput);
-    if (created) {
-      setSelectedCompanies((prev) => [...prev, created as Company]);
-    }
-  };
-
-  const handleEditCompany = async (_entity: RelationEntity, data: unknown) => {
-    await updateEntity('company', data as CompanyUpsertInput);
-  };
-
-  const handleDeleteCompany = async (companyId: string) => {
-    setSelectedCompanies((prev) => prev.filter((c) => c.id !== companyId));
-  };
-
-  // Education handlers
-  const handleAddEducations = async (educationIds: string[]) => {
-    const newEducations = educations.filter((e) => educationIds.includes(e.id));
-    setSelectedEducations((prev) => [...prev, ...newEducations]);
-  };
-
-  const handleCreateEducation = async (data: unknown) => {
-    const created = await createEntity('education', data as EducationCreateInput);
-    if (created) {
-      setSelectedEducations((prev) => [...prev, created as Education]);
-    }
-  };
-
-  const handleEditEducation = async (_entity: RelationEntity, data: unknown) => {
-    await updateEntity('education', data as EducationUpsertInput);
-  };
-
-  const handleDeleteEducation = async (educationId: string) => {
-    setSelectedEducations((prev) => prev.filter((e) => e.id !== educationId));
-  };
-
-  // Project handlers
-  const handleAddProjects = async (projectIds: string[]) => {
-    const newProjects = projects.filter((p) => projectIds.includes(p.id));
-    setSelectedProjects((prev) => [...prev, ...newProjects]);
-  };
-
-  const handleCreateProject = async (data: unknown) => {
-    const created = await createEntity('project', data as ProjectCreateInput);
-    if (created) {
-      setSelectedProjects((prev) => [...prev, created as Project]);
-    }
-  };
-
-  const handleEditProject = async (_entity: RelationEntity, data: unknown) => {
-    await updateEntity('project', data as ProjectUpsertInput);
-  };
-
-  const handleDeleteProject = async (projectId: string) => {
-    setSelectedProjects((prev) => prev.filter((p) => p.id !== projectId));
-  };
-
-  // Skill handlers
-  const handleAddSkills = async (skillIds: string[]) => {
-    const newSkills = skills.filter((s) => skillIds.includes(s.id));
-    setSelectedSkills((prev) => [...prev, ...newSkills]);
-  };
-
-  const handleCreateSkill = async (data: unknown) => {
-    const created = await createEntity('skill', data as SkillCreateInput);
-    if (created) {
-      setSelectedSkills((prev) => [...prev, created as Skill]);
-    }
-  };
-
-  const handleEditSkill = async (_entity: RelationEntity, data: unknown) => {
-    await updateEntity('skill', data as SkillUpsertInput);
-  };
-
-  const handleDeleteSkill = async (skillId: string) => {
-    setSelectedSkills((prev) => prev.filter((s) => s.id !== skillId));
-  };
+  // Generic relation handlers
+  const companyHandlers = createRelationHandlers<'company'>({
+    type: 'company',
+    entities: selectedCompanies,
+    setEntities: setSelectedCompanies as Dispatch<SetStateAction<RelationEntity[]>>,
+    createEntity: (type, input) => createEntity(type, input),
+    updateEntity: async (type, input) => {
+      await updateEntity(type, input);
+    },
+  });
+  const educationHandlers = createRelationHandlers<'education'>({
+    type: 'education',
+    entities: selectedEducations,
+    setEntities: setSelectedEducations as Dispatch<SetStateAction<RelationEntity[]>>,
+    createEntity: (type, input) => createEntity(type, input),
+    updateEntity: async (type, input) => {
+      await updateEntity(type, input);
+    },
+  });
+  const projectHandlers = createRelationHandlers<'project'>({
+    type: 'project',
+    entities: selectedProjects,
+    setEntities: setSelectedProjects as Dispatch<SetStateAction<RelationEntity[]>>,
+    createEntity: (type, input) => createEntity(type, input),
+    updateEntity: async (type, input) => {
+      await updateEntity(type, input);
+    },
+  });
+  const skillHandlers = createRelationHandlers<'skill'>({
+    type: 'skill',
+    entities: selectedSkills,
+    setEntities: setSelectedSkills as Dispatch<SetStateAction<RelationEntity[]>>,
+    createEntity: (type, input) => createEntity(type, input),
+    updateEntity: async (type, input) => {
+      await updateEntity(type, input);
+    },
+  });
 
   return (
     <div className="container mx-auto py-8 space-y-6">
@@ -279,10 +226,18 @@ function EditCvPage({
           type="company"
           entities={selectedCompanies}
           availableEntities={availableCompanies}
-          onAdd={handleAddCompanies}
-          onCreate={handleCreateCompany}
-          onEdit={handleEditCompany}
-          onDelete={handleDeleteCompany}
+          onAdd={async (ids) => {
+            companyHandlers.handleAdd(ids);
+          }}
+          onCreate={async (data) => {
+            await companyHandlers.handleCreate(data as CreateInputMap['company']);
+          }}
+          onEdit={async (entity, data) => {
+            await companyHandlers.handleEdit(entity, data as UpdateInputMap['company']);
+          }}
+          onDelete={async (id) => {
+            companyHandlers.handleDelete(id);
+          }}
         />
       </Card>
 
@@ -291,10 +246,18 @@ function EditCvPage({
           type="education"
           entities={selectedEducations}
           availableEntities={availableEducations}
-          onAdd={handleAddEducations}
-          onCreate={handleCreateEducation}
-          onEdit={handleEditEducation}
-          onDelete={handleDeleteEducation}
+          onAdd={async (ids) => {
+            educationHandlers.handleAdd(ids);
+          }}
+          onCreate={async (data) => {
+            await educationHandlers.handleCreate(data as CreateInputMap['education']);
+          }}
+          onEdit={async (entity, data) => {
+            await educationHandlers.handleEdit(entity, data as UpdateInputMap['education']);
+          }}
+          onDelete={async (id) => {
+            educationHandlers.handleDelete(id);
+          }}
         />
       </Card>
 
@@ -303,10 +266,18 @@ function EditCvPage({
           type="project"
           entities={selectedProjects}
           availableEntities={availableProjects}
-          onAdd={handleAddProjects}
-          onCreate={handleCreateProject}
-          onEdit={handleEditProject}
-          onDelete={handleDeleteProject}
+          onAdd={async (ids) => {
+            projectHandlers.handleAdd(ids);
+          }}
+          onCreate={async (data) => {
+            await projectHandlers.handleCreate(data as CreateInputMap['project']);
+          }}
+          onEdit={async (entity, data) => {
+            await projectHandlers.handleEdit(entity, data as UpdateInputMap['project']);
+          }}
+          onDelete={async (id) => {
+            projectHandlers.handleDelete(id);
+          }}
         />
       </Card>
 
@@ -315,10 +286,18 @@ function EditCvPage({
           type="skill"
           entities={selectedSkills}
           availableEntities={availableSkills}
-          onAdd={handleAddSkills}
-          onCreate={handleCreateSkill}
-          onEdit={handleEditSkill}
-          onDelete={handleDeleteSkill}
+          onAdd={async (ids) => {
+            skillHandlers.handleAdd(ids);
+          }}
+          onCreate={async (data) => {
+            await skillHandlers.handleCreate(data as CreateInputMap['skill']);
+          }}
+          onEdit={async (entity, data) => {
+            await skillHandlers.handleEdit(entity, data as UpdateInputMap['skill']);
+          }}
+          onDelete={async (id) => {
+            skillHandlers.handleDelete(id);
+          }}
         />
       </Card>
     </div>

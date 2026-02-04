@@ -1,19 +1,13 @@
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
 import { Dialog } from '../ui/Dialog';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
-import { CompanyForm } from './forms/CompanyForm';
-import { EducationForm } from './forms/EducationForm';
-import { ProjectForm } from './forms/ProjectForm';
-import { SkillForm } from './forms/SkillForm';
-import { companySchema, type CompanyFormData } from '../../schemas/company.schema';
-import { educationSchema, type EducationFormData } from '../../schemas/education.schema';
-import { projectSchema, type ProjectFormData } from '../../schemas/project.schema';
-import { skillSchema, type SkillFormData } from '../../schemas/skill.schema';
 import type { RelationType, RelationEntity } from '../../hooks/relations/types';
 import type { Company, Education, Project, Skill } from '../../graphql/generated/types';
+import { CompanyRelationModal } from './modals/CompanyRelationModal';
+import { EducationRelationModal } from './modals/EducationRelationModal';
+import { ProjectRelationModal } from './modals/ProjectRelationModal';
+import { SkillRelationModal } from './modals/SkillRelationModal';
 
 interface RelationModalProps {
   open: boolean;
@@ -22,119 +16,9 @@ interface RelationModalProps {
   mode: 'create' | 'edit' | 'select';
   entity?: RelationEntity;
   availableEntities?: RelationEntity[];
-  onSubmit: (data: unknown) => Promise<void>;
+  onSubmit: (data: object) => Promise<void>;
   onSelect?: (entityIds: string[]) => Promise<void>;
   openCreate?: () => void;
-}
-
-const normalizeDateInput = (value?: string | null) => {
-  if (!value) return '';
-  return value.length >= 10 ? value.slice(0, 10) : value;
-};
-
-function CompanyFormWrapper({
-  entity,
-  onSubmit,
-}: {
-  entity?: Company;
-  onSubmit: (data: CompanyFormData) => Promise<void>;
-}) {
-  const form = useForm<CompanyFormData>({
-    resolver: yupResolver(companySchema),
-    defaultValues: entity
-      ? {
-          name: entity.name,
-          address: entity.address ?? '',
-          zipCode: entity.zipCode ?? '',
-          city: entity.city ?? '',
-          description: entity.description ?? '',
-        }
-      : undefined,
-  });
-
-  return (
-    <form id="form-company" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-      <CompanyForm form={form} />
-    </form>
-  );
-}
-
-function EducationFormWrapper({
-  entity,
-  onSubmit,
-}: {
-  entity?: Education;
-  onSubmit: (data: EducationFormData) => Promise<void>;
-}) {
-  const form = useForm<EducationFormData>({
-    resolver: yupResolver(educationSchema),
-    defaultValues: entity
-      ? {
-          name: entity.name,
-          address: entity.address ?? '',
-          zipCode: entity.zipCode ?? '',
-          city: entity.city ?? '',
-          description: entity.description ?? '',
-        }
-      : undefined,
-  });
-
-  return (
-    <form id="form-education" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-      <EducationForm form={form} />
-    </form>
-  );
-}
-
-function ProjectFormWrapper({
-  entity,
-  onSubmit,
-}: {
-  entity?: Project;
-  onSubmit: (data: ProjectFormData) => Promise<void>;
-}) {
-  const form = useForm<ProjectFormData>({
-    resolver: yupResolver(projectSchema),
-    defaultValues: entity
-      ? {
-          name: entity.name,
-          startDate: normalizeDateInput(entity.startDate),
-          endDate: normalizeDateInput(entity.endDate),
-          description: entity.description ?? '',
-        }
-      : undefined,
-  });
-
-  return (
-    <form id="form-project" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-      <ProjectForm form={form} />
-    </form>
-  );
-}
-
-function SkillFormWrapper({
-  entity,
-  onSubmit,
-}: {
-  entity?: Skill;
-  onSubmit: (data: SkillFormData) => Promise<void>;
-}) {
-  const form = useForm<SkillFormData>({
-    resolver: yupResolver(skillSchema),
-    defaultValues: entity
-      ? {
-          name: entity.name,
-          description: entity.description ?? '',
-          levelOfMastery: entity.levelOfMastery,
-        }
-      : { levelOfMastery: 'BASIS' },
-  });
-
-  return (
-    <form id="form-skill" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-      <SkillForm form={form} />
-    </form>
-  );
 }
 
 export function RelationModal({
@@ -161,7 +45,7 @@ export function RelationModal({
     onClose();
   };
 
-  const handleFormSubmit = async (data: unknown) => {
+  const handleFormSubmit = async (data: object) => {
     await onSubmit(data);
     handleClose();
   };
@@ -221,22 +105,28 @@ export function RelationModal({
     switch (type) {
       case 'company':
         return (
-          <CompanyFormWrapper entity={entity as Company | undefined} onSubmit={handleFormSubmit} />
+          <CompanyRelationModal
+            entity={entity as Company | undefined}
+            onSubmit={handleFormSubmit}
+          />
         );
       case 'education':
         return (
-          <EducationFormWrapper
+          <EducationRelationModal
             entity={entity as Education | undefined}
             onSubmit={handleFormSubmit}
           />
         );
       case 'project':
         return (
-          <ProjectFormWrapper entity={entity as Project | undefined} onSubmit={handleFormSubmit} />
+          <ProjectRelationModal
+            entity={entity as Project | undefined}
+            onSubmit={handleFormSubmit}
+          />
         );
       case 'skill':
         return (
-          <SkillFormWrapper entity={entity as Skill | undefined} onSubmit={handleFormSubmit} />
+          <SkillRelationModal entity={entity as Skill | undefined} onSubmit={handleFormSubmit} />
         );
     }
   };
@@ -249,7 +139,7 @@ export function RelationModal({
     }
     if (type === 'project') {
       const e = entity as Project;
-      return `${e.name} (${normalizeDateInput(e.startDate)} - ${normalizeDateInput(e.endDate)})`;
+      return `${e.name} (${e.startDate ?? ''} - ${e.endDate ?? ''})`;
     }
     return entity.name;
   };
